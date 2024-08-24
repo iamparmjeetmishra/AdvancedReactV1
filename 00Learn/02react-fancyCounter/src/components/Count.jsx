@@ -1,4 +1,4 @@
 
-export default function Count() {
-   return <p className='count'>0</p>
+export default function Count({ number }) {
+   return <p className='count'>{number}</p>
 }
