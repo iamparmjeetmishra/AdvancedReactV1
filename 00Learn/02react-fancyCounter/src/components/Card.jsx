@@ -15,13 +15,18 @@ export default function Card() {
 
       const handleKeydown = (e) => {
          if (e.code === 'Space') {
-            setNumber(number + 1)
+            const newNum = number + 1
+            if (newNum > 5) {
+               setNumber(5)
+               return
+            }
+            return setNumber(newNum)
          }
       }
 
       window.addEventListener('keydown', handleKeydown)
       // cleanup
-      return () => { 
+      return () => {
          window.removeEventListener('keydown', handleKeydown)
       }
    }, [number])
