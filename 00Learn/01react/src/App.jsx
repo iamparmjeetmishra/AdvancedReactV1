@@ -1,7 +1,14 @@
 import Button from "./components/Button";
 import Count from "./components/Count";
+import { useState} from 'react'
+
+
 
 export default function App() {
+  const [number, setNumber] = useState(0)
+
+
+
   return (
     <div style={{
       display: "flex",
@@ -10,8 +17,8 @@ export default function App() {
       alignItems: 'center',
     }}>
       <h1>Count App</h1>
-      <Count />
-      <Button></Button>
+      <Count number={number} />
+      <Button setNumber={setNumber} />
     </div>
   )
 }
