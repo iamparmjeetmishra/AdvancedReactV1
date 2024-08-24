@@ -17,7 +17,12 @@ export default function App() {
       alignItems: 'center',
     }}>
       <h1>Count App</h1>
-      <Count number={number} />
+      {
+        number < 4 
+          ? <Count number={number} />
+          : null
+      }
+
       <Button setNumber={setNumber} />
     </div>
   )
