@@ -5,7 +5,7 @@ import CountBtn from './CountBtn'
 
 export default function Card() {
    return (
-      <div>
+      <div className='card'>
          <Title />
          <Count />
          <ResetBtn />
