@@ -11,3 +11,9 @@
    - [x] Keydown function bug - with focus and keydown clash and it increase the number twice.
 - [x] 3) React- Fancy Counter V1
    - [x] It solves prop driling of Button containers
+- [x] 4) React - Word Analytics V1
+   - [x] Seperates Components
+   - [x] Props
+   - [x] useState
+   - [x] Constants Data
+   - [x] Objects as Prop
