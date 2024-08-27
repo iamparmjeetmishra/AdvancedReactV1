@@ -1,26 +1,35 @@
 import { useState } from "react"
+import { MSG_MAX_LENGTH } from "../lib/constants"
 
-const MSG_MAX_LENGTH = 150
 
 export default function FeedbackForm() {
   const [text, setText] = useState('')
 
-  const handleClick = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(e.target.value)
   }
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value
+    if (newText.length > MSG_MAX_LENGTH) {
+      return
+    }
+    setText(newText)
+  }
+
   console.log(text)
+
   const charCount = MSG_MAX_LENGTH - text.length
 
   return (
-    <form className="form" onSubmit={handleClick}>
+    <form className="form" onSubmit={handleSubmit}>
       <textarea
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={handleChange}
         id="feedback-textarea"
         placeholder=""
         spellCheck={false}
-        maxLength={150}
+        maxLength={MSG_MAX_LENGTH}
       />
       <label htmlFor="feedback-textarea">
         Enter your feedback here, remember to #hashtag the company
