@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import HashtagList from "./components/HashtagList";
 import { TFeedbackItem } from "./lib/types";
 import Footer from "./components/layout/Footer";
@@ -10,7 +10,7 @@ export default function App() {
 	);
 	const [loading, setLoading] = useState(false);
 	const [errMessage, setErrMessage] = useState("");
-	const [selectedCompany, setSelectedCompany] = useState('');
+	const [selectedCompany, setSelectedCompany] = useState("");
 
 	const handleAddToList = async (text: string) => {
 		const companyName = text
@@ -68,21 +68,25 @@ export default function App() {
 		fetchData();
 	}, []);
 
-	const companyList = feedbackItems
+	const companyList = useMemo(() => feedbackItems
 		.map((item) => item.company)
 		.filter((company, index, array) => {
 			return array.indexOf(company) === index;
-		});
+		}), [feedbackItems])
 
-	const filteredFeedbackItems = selectedCompany
-		? feedbackItems.filter(
-				(feedbackItem) => feedbackItem.company === selectedCompany
-		  )
-    : feedbackItems;
-  
-  const handleSelectCompany = (company: string) => {
-    setSelectedCompany(company)
-  }
+	const filteredFeedbackItems = useMemo(
+		() =>
+			selectedCompany
+				? feedbackItems.filter(
+						(feedbackItem) => feedbackItem.company === selectedCompany
+				  )
+				: feedbackItems,
+		[feedbackItems, selectedCompany]
+	);
+
+	const handleSelectCompany = (company: string) => {
+		setSelectedCompany(company);
+	};
 
 	console.log(companyList);
 
@@ -95,10 +99,10 @@ export default function App() {
 				errMessage={errMessage}
 				feedbackItems={filteredFeedbackItems}
 			/>
-      <HashtagList
-        companyList={companyList}
-        handleSelectCompany={handleSelectCompany}
-      />
+			<HashtagList
+				companyList={companyList}
+				handleSelectCompany={handleSelectCompany}
+			/>
 		</div>
 	);
 }
