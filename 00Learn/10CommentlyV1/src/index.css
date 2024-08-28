@@ -160,6 +160,11 @@ h1 *::selection {
   margin-bottom: 2rem;
 }
 
+.logoText {
+  cursor: pointer ;
+  z-index: 2;
+}
+
 .logo::selection {
   background-color: initial;
 }
