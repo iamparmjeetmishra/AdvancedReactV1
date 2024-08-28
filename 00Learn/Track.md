@@ -17,3 +17,16 @@
    - [x] useState
    - [x] Constants Data
    - [x] Objects as Prop
+- [x] 5) Trekbagv1
+   - [x] Using Props Way
+- [x] 6) TrekBagV2
+   - [x] Components modifed for lessen the prop drilling
+- [x] 7) TrekBagV3
+   - [x] Simplify the app using useContext and custom hook
+   - [x] remove all the prop drilling
+   - [x] Performance Issue 
+      - If one thing change and all the app re-renders
+      - Lots of Boilerplat
+- [x] 8) TrekBagV4
+   - [x] Simplify the app logic using zustand
+   - [x] remove usecontexthook for less rendering
