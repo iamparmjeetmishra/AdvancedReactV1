@@ -1,14 +1,15 @@
 import { useState } from "react"
 import { MSG_MAX_LENGTH } from "../lib/constants"
 
+type TFeedbackFormProps = {
+  handleAddToList: (text: string) => void;
+}
 
-export default function FeedbackForm() {
+
+export default function FeedbackForm({handleAddToList}: TFeedbackFormProps) {
   const [text, setText] = useState('')
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-  }
-
+  
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value
     if (newText.length > MSG_MAX_LENGTH) {
@@ -16,7 +17,15 @@ export default function FeedbackForm() {
     }
     setText(newText)
   }
-
+  
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    console.log('from hs')
+    handleAddToList(text)
+    setText('')
+    console.log(handleAddToList(text))
+  }
+  
   console.log(text)
 
   const charCount = MSG_MAX_LENGTH - text.length
