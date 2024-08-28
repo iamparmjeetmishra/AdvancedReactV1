@@ -5,8 +5,7 @@ import Footer from "./components/layout/Footer";
 import Container from "./components/layout/Container";
 
 export default function App() {
-
-  const [feedbackItems, setFeedbackItems] = useState<TFeedbackItem[]>(
+	const [feedbackItems, setFeedbackItems] = useState<TFeedbackItem[]>(
 		[]
 	);
 	const [loading, setLoading] = useState(false);
@@ -24,18 +23,21 @@ export default function App() {
 			upvoteCount: 0,
 			daysAgo: 0,
 			company: companyName,
-			badgeLetter: companyName.substring(0,1).toUpperCase(),
+			badgeLetter: companyName.substring(0, 1).toUpperCase(),
 		};
-    setFeedbackItems([...feedbackItems, newItem]);
-    
-    await fetch("https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks", {
-      method: 'Post',
-      body: JSON.stringify(newItem),
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      }
-    })
+		setFeedbackItems([...feedbackItems, newItem]);
+
+		await fetch(
+			"https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks",
+			{
+				method: "Post",
+				body: JSON.stringify(newItem),
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+			}
+		);
 	};
 
 	useEffect(() => {
@@ -65,15 +67,24 @@ export default function App() {
 		fetchData();
 	}, []);
 
-  return (
-    <div className="app">
-      <Footer />
-      <Container
-        handleAddToList={handleAddToList}
-        loading={loading}
-        errMessage={errMessage}
-        feedbackItems={feedbackItems} />
-      <HashtagList />
-    </div>
-  )
+	const companyList = feedbackItems
+		.map((item) => item.company)
+		.filter((company, index, array) => {
+			return array.indexOf(company) === index;
+		});
+
+	console.log(companyList);
+
+	return (
+		<div className="app">
+			<Footer />
+			<Container
+				handleAddToList={handleAddToList}
+				loading={loading}
+				errMessage={errMessage}
+				feedbackItems={feedbackItems}
+			/>
+			<HashtagList companyList={companyList} />
+		</div>
+	);
 }

@@ -1,10 +1,18 @@
 
-export default function HashtagList() {
+type THashtagListProps = {
+  companyList: string[]
+}
+
+export default function HashtagList({companyList}:THashtagListProps) {
+
   return (
     <ul className="hashtags">
-      <li><button>#Tag</button></li>
-      <li><button>#JS</button></li>
-      <li><button>#TS</button></li>
+      {
+        companyList.map((company: string) => (
+          <li key={company} ><button>#{company }</button></li>
+        ))
+      }
+        
     </ul>
   )
 }
