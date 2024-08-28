@@ -10,6 +10,7 @@ export default function App() {
 	);
 	const [loading, setLoading] = useState(false);
 	const [errMessage, setErrMessage] = useState("");
+	const [selectedCompany, setSelectedCompany] = useState('');
 
 	const handleAddToList = async (text: string) => {
 		const companyName = text
@@ -73,6 +74,16 @@ export default function App() {
 			return array.indexOf(company) === index;
 		});
 
+	const filteredFeedbackItems = selectedCompany
+		? feedbackItems.filter(
+				(feedbackItem) => feedbackItem.company === selectedCompany
+		  )
+    : feedbackItems;
+  
+  const handleSelectCompany = (company: string) => {
+    setSelectedCompany(company)
+  }
+
 	console.log(companyList);
 
 	return (
@@ -82,9 +93,12 @@ export default function App() {
 				handleAddToList={handleAddToList}
 				loading={loading}
 				errMessage={errMessage}
-				feedbackItems={feedbackItems}
+				feedbackItems={filteredFeedbackItems}
 			/>
-			<HashtagList companyList={companyList} />
+      <HashtagList
+        companyList={companyList}
+        handleSelectCompany={handleSelectCompany}
+      />
 		</div>
 	);
 }
