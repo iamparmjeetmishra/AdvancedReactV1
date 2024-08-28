@@ -68,11 +68,15 @@ export default function App() {
 		fetchData();
 	}, []);
 
-	const companyList = useMemo(() => feedbackItems
-		.map((item) => item.company)
-		.filter((company, index, array) => {
-			return array.indexOf(company) === index;
-		}), [feedbackItems])
+	const companyList = useMemo(
+		() =>
+			feedbackItems
+				.map((item) => item.company)
+				.filter((company, index, array) => {
+					return array.indexOf(company) === index;
+				}),
+		[feedbackItems]
+	);
 
 	const filteredFeedbackItems = useMemo(
 		() =>
@@ -99,10 +103,15 @@ export default function App() {
 				errMessage={errMessage}
 				feedbackItems={filteredFeedbackItems}
 			/>
-			<HashtagList
-				companyList={companyList}
-				handleSelectCompany={handleSelectCompany}
-			/>
+			<HashtagList>
+				{companyList.map((company: string) => (
+					<li key={company}>
+						<button onClick={() => handleSelectCompany(company)}>
+							#{company}
+						</button>
+					</li>
+				))}
+			</HashtagList>
 		</div>
 	);
 }
