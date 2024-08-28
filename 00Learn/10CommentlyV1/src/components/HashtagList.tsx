@@ -1,15 +1,16 @@
 
 type THashtagListProps = {
-  companyList: string[]
+  companyList: string[];
+  handleSelectCompany: (comapany: string) => void;
 }
 
-export default function HashtagList({companyList}:THashtagListProps) {
+export default function HashtagList({companyList, handleSelectCompany}:THashtagListProps) {
 
   return (
     <ul className="hashtags">
       {
         companyList.map((company: string) => (
-          <li key={company} ><button>#{company }</button></li>
+          <li key={company}><button onClick={() => handleSelectCompany(company) }>#{company }</button></li>
         ))
       }
         
