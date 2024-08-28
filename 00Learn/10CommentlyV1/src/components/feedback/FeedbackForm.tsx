@@ -6,8 +6,10 @@ type TFeedbackFormProps = {
 }
 
 
-export default function FeedbackForm({handleAddToList}: TFeedbackFormProps) {
+export default function FeedbackForm({ handleAddToList }: TFeedbackFormProps) {
   const [text, setText] = useState('')
+  const [showValidation, setShowValidation] = useState(false)
+  const [showInvalidation, setShowInvalidation] = useState(false)
 
   
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -20,10 +22,18 @@ export default function FeedbackForm({handleAddToList}: TFeedbackFormProps) {
   
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('from hs')
+
+    //basic validation
+    if (text.includes('#') && text.length >= 5) {
+      setShowValidation(true)
+      setTimeout(() => setShowValidation(false), 2000)
+    } else {
+      setShowInvalidation(true)
+      setTimeout(() => setShowInvalidation(false), 2000)
+      return
+    }
     handleAddToList(text)
     setText('')
-    console.log(handleAddToList(text))
   }
   
   console.log(text)
@@ -31,7 +41,7 @@ export default function FeedbackForm({handleAddToList}: TFeedbackFormProps) {
   const charCount = MSG_MAX_LENGTH - text.length
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
+    <form className={`form ${showValidation ? 'form--valid' : ''} ${showInvalidation ? 'form--invalid' : ''} `} onSubmit={handleSubmit}>
       <textarea
         value={text}
         onChange={handleChange}
