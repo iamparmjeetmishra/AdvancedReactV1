@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { MSG_MAX_LENGTH } from "../lib/constants"
+import { MSG_MAX_LENGTH } from "../../lib/constants"
 
 type TFeedbackFormProps = {
   handleAddToList: (text: string) => void;

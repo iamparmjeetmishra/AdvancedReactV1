@@ -1,6 +1,6 @@
-import { TFeedbackItem } from "../lib/types";
+import { TFeedbackItem } from "../../lib/types";
 import FeedbackItem from "./FeedbackItem";
-import Spinner from "./Spinner";
+import Spinner from "../Spinner";
 
 type TFeedbackListProp = {
 	loading: boolean;
