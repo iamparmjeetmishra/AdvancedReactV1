@@ -36,7 +36,6 @@ export default function FeedbackForm({ handleAddToList }: TFeedbackFormProps) {
     setText('')
   }
   
-  console.log(text)
 
   const charCount = MSG_MAX_LENGTH - text.length
 
