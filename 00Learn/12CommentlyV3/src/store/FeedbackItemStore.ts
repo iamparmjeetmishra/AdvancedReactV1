@@ -1,14 +1,25 @@
 import { create } from "zustand";
 import { TFeedbackItem } from "../lib/types";
 
-export const useFeedbackItemsStore = create((set, get) => ({
+type TStore = {
+   feedbackItems: TFeedbackItem[];
+   loading: boolean;
+   errMessage: string;
+   selectedCompany: string;
+   getCompanyList: () => string[];
+   getFilteredFeedbackItems: () => TFeedbackItem[];
+   handleAddToList: (text: string) => Promise<void>;
+   selectCompany: (company: string) => void;
+   fetchFeedbackItems: () => Promise<void>
+}
+
+
+export const useFeedbackItemsStore = create<TStore>((set, get) => ({
 	feedbackItems: [],
 	loading: false,
 	errMessage: "",
 	selectedCompany: "",
 	fetchFeedbackItems: async () => {
-		// setLoading(true)
-
 		set(() => ({
 			loading: true,
 		}));
@@ -23,22 +34,17 @@ export const useFeedbackItemsStore = create((set, get) => ({
 			const data = await res.json();
 			// setFeedbackItems(data.feedbacks);
 			set(() => ({
-				setFeedbackItems: data.feedbacks,
+				feedbackItems: data.feedbacks,
 			}));
 		} catch (error) {
 			console.log("Err Fetching:", error);
 			set(() => ({
-				setErrMessage:
+				errMessage:
 					error instanceof Error
 						? error.message
 						: "An unexpected error while fetching",
 			}));
-			// setErrMessage(
-			//    error instanceof Error
-			//       ? error.message
-			//       : "An unexpected error while fetching"
-			// );
-			// setLoading(false);
+
 			set(() => ({
 				loading: false,
 			}));
@@ -65,7 +71,7 @@ export const useFeedbackItemsStore = create((set, get) => ({
 		};
 		// setFeedbackItems([...feedbackItems, newItem]);
 		set((state) => ({
-			FeedbackItems: [...state.feedbackItems, newItem],
+			feedbackItems: [...state.feedbackItems, newItem],
 		}));
 
 		await fetch(
@@ -96,7 +102,7 @@ export const useFeedbackItemsStore = create((set, get) => ({
       const state = get()
 		return state.selectedCompany
 			? state.feedbackItems.filter(
-					(feedbackItem) => feedbackItem.company === selectedCompany
+					(feedbackItem) => feedbackItem.company === state.selectedCompany
 			)
 			: state.feedbackItems;
 	},
