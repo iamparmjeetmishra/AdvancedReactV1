@@ -1,14 +1,55 @@
 import { create } from "zustand";
 import { TFeedbackItem } from "../lib/types";
 
+export const useFeedbackItemsStore = create((set, get) => ({
+	feedbackItems: [],
+	loading: false,
+	errMessage: "",
+	selectedCompany: "",
+	fetchFeedbackItems: async () => {
+		// setLoading(true)
 
+		set(() => ({
+			loading: true,
+		}));
 
-create((set) => ({
-   feedbackItems: [],
-   loading: false,
-   errMessage: '',
-   selectedCompany: '',
-   handleAddToList: async (text: string) => {
+		try {
+			const res = await fetch(
+				"https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks"
+			);
+			if (!res.ok) {
+				throw new Error("Fetch failed");
+			}
+			const data = await res.json();
+			// setFeedbackItems(data.feedbacks);
+			set(() => ({
+				setFeedbackItems: data.feedbacks,
+			}));
+		} catch (error) {
+			console.log("Err Fetching:", error);
+			set(() => ({
+				setErrMessage:
+					error instanceof Error
+						? error.message
+						: "An unexpected error while fetching",
+			}));
+			// setErrMessage(
+			//    error instanceof Error
+			//       ? error.message
+			//       : "An unexpected error while fetching"
+			// );
+			// setLoading(false);
+			set(() => ({
+				loading: false,
+			}));
+		} finally {
+			// setLoading(false);
+			set(() => ({
+				loading: false,
+			}));
+		}
+	},
+	handleAddToList: async (text: string) => {
 		const companyName = text
 			.split(" ")
 			.find((word) => word.includes("#"))!
@@ -22,10 +63,10 @@ create((set) => ({
 			company: companyName,
 			badgeLetter: companyName.substring(0, 1).toUpperCase(),
 		};
-      // setFeedbackItems([...feedbackItems, newItem]);
-      set(state => ({
-         FeedbackItems: [...state.feedbackItems, newItem]
-      }))
+		// setFeedbackItems([...feedbackItems, newItem]);
+		set((state) => ({
+			FeedbackItems: [...state.feedbackItems, newItem],
+		}));
 
 		await fetch(
 			"https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks",
@@ -38,50 +79,25 @@ create((set) => ({
 				},
 			}
 		);
-   },
-   selectCompany: (company: string) => {
-      set(() => ({
-         selectedCompany: company
-      }))
-   },
-   fetchFeedbackItems: async () => {
-      // setLoading(true)
-
-      set(() => ({
-         loading: true
-      }))
-
-      try {
-         const res = await fetch(
-            "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks"
-         );
-         if (!res.ok) {
-            throw new Error("Fetch failed");
-         }
-         const data = await res.json();
-         // setFeedbackItems(data.feedbacks);
-         set(() => ({
-            setFeedbackItems: data.feedbacks
-         }))
-      } catch (error) {
-         console.log("Err Fetching:", error);
-         set(() => ({
-            setErrMessage: error instanceof Error ? error.message : "An unexpected error while fetching"
-         }))
-         // setErrMessage(
-         //    error instanceof Error
-         //       ? error.message
-         //       : "An unexpected error while fetching"
-         // );
-         // setLoading(false);
-         set(() => ({
-            loading: false
-         }))
-      } finally {
-         // setLoading(false);
-         set(() => ({
-            loading: false
-         }))
-      }
-   },
-}))
+	},
+	selectCompany: (company: string) => {
+		set(() => ({
+			selectedCompany: company,
+		}));
+	},
+	getCompanyList: () => {
+		return get()
+			.feedbackItems.map((item) => item.company)
+			.filter((company, index, array) => {
+				return array.indexOf(company) === index;
+			});
+	},
+   getFilteredFeedbackItems: () => {
+      const state = get()
+		return state.selectedCompany
+			? state.feedbackItems.filter(
+					(feedbackItem) => feedbackItem.company === selectedCompany
+			)
+			: state.feedbackItems;
+	},
+}));
