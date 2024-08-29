@@ -30,3 +30,5 @@
 - [x] 8) TrekBagV4
    - [x] Simplify the app logic using zustand
    - [x] remove usecontexthook for less rendering
+- [x] 9) TS
+   - [x] Btn type
