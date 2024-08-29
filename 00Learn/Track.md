@@ -32,3 +32,16 @@
    - [x] remove usecontexthook for less rendering
 - [x] 9) TS
    - [x] Btn type
+- [x] 10) CommentlyV1
+   - [x] Components
+   - [x] useState, useEffect and useMemo
+   - [x] Props drilling way
+   - [x] fetch
+   - [x] local storage
+- [x] 11) CommentlyV2
+   - [x] Issue of Prop Drilling removed
+   - [x] useContextHook used 
+   - [x] customhook created for better utilization
+- [x] 12) CommentlyV3
+   - [x] Issue of useContextHook-Optimization removed
+   - [x] Zustand implemented
