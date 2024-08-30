@@ -16,7 +16,7 @@ import { useJobItems } from "../lib/hooks";
 
 function App() {
 	const [searchText, setSearchText] = useState("");
-  const { setJobItems, isLoading, jobItems } = useJobItems(searchText)
+  const { setJobItems, isLoading, jobItemsSliced } = useJobItems(searchText)
 
 	const headerEffect = {
 		setJobItems,
@@ -39,11 +39,11 @@ function App() {
 				<Sidebar>
 					<SidebarTop>
 						<ResultsCount
-							count={jobItems.length > 0 ? jobItems.length : 0}
+							count={jobItemsSliced.length > 0 ? jobItemsSliced.length : 0}
 						/>
 						<Sorting />
 					</SidebarTop>
-					<JobList jobItems={jobItems} isLoading={isLoading} />
+					<JobList jobItems={jobItemsSliced} isLoading={isLoading} />
 					<Pagination />
 				</Sidebar>
 				<JobItemContent />
