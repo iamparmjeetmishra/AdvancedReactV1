@@ -1,13 +1,22 @@
-import { TJobItemData } from "../lib/type";
+import { useActiveId, useJobItem } from "../lib/hooks";
 import BookmarkIcon from "./BookmarkIcon";
+import Spinner from "./Spinner";
 
-type TJobItemContentProps = {
-	jobItem: TJobItemData | null;
-};
 
-export default function JobItemContent({
-	jobItem,
-}: TJobItemContentProps) {
+
+export default function JobItemContent() {
+  
+  const activeId = useActiveId()
+  const {jobItem, isLoading } = useJobItem(activeId)
+  
+  if (isLoading) {
+    return <section className="job-details">
+      <div>
+        <Spinner />
+      </div>
+    </section>
+  }
+  
 	if (!jobItem) {
 		return <EmptyJobContent />;
 	}
