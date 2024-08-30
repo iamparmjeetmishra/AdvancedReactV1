@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { TJobItem, TJobItemData } from "./type";
 import { BASE_API_URL } from "./constants";
+import { useQuery } from "@tanstack/react-query";
 
 export function useJobItems(searchText: string) {
 	const [jobItems, setJobItems] = useState<TJobItem[]>([]);
@@ -52,26 +53,62 @@ export function useActiveId() {
 	return activeId;
 }
 
+// export function useJobItem(id: number | null) {
+// 	const [jobItem, setJobItem] = useState<TJobItemData | null>(null);
+// 	const [isLoading, setIsLoading] = useState(false);
+
+// 	useEffect(() => {
+// 		if (!id) return;
+
+// 		const fetchData = async () => {
+// 			try {
+// 				setIsLoading(true);
+// 				const res = await fetch(`${BASE_API_URL}/${id}`);
+// 				const data = await res.json();
+// 				setIsLoading(false);
+// 				setJobItem(data.jobItem);
+// 			} catch (error) {
+// 				console.log("ListingErr:", error);
+// 			}
+// 		};
+// 		fetchData();
+// 	}, [id]);
+// 	return { jobItem, isLoading } as const;
+// }
+
+type TJobItemApiResponse = {
+	public: boolean;
+	jobItem:TJobItemData;
+}
+
+const fetchJobItem = async (id: number | null) : Promise<TJobItemApiResponse> => {
+	const res = await fetch(`${BASE_API_URL}/${id}`)
+	//4xx or 5xx
+	if (!res.ok) {
+		const errorData = await res.json()
+		console.log('fetchJob:',errorData.description)
+		throw new Error(errorData.description)
+	}
+	const data = await res.json()
+	return data;
+}
+
 export function useJobItem(id: number | null) {
-	const [jobItem, setJobItem] = useState<TJobItemData | null>(null);
-	const [isLoading, setIsLoading] = useState(false);
-
-	useEffect(() => {
-		if (!id) return;
-
-		const fetchData = async () => {
-			try {
-				setIsLoading(true);
-				const res = await fetch(`${BASE_API_URL}/${id}`);
-				const data = await res.json();
-				setIsLoading(false);
-				setJobItem(data.jobItem);
-			} catch (error) {
-				console.log("ListingErr:", error);
-			}
-		};
-		fetchData();
-	}, [id]);
+	const { data, isInitialLoading } = useQuery(
+		['job-item', id],
+		() => fetchJobItem(id),
+		{
+			staleTime: 1000 * 60 * 60,
+			refetchOnWindowFocus: false,
+			retry: false,
+			enabled: Boolean(id),
+			onError: (error) => {
+				console.log('err', error)
+			},
+		}
+	)
+	const jobItem = data?.jobItem
+	const isLoading = isInitialLoading
 	return { jobItem, isLoading } as const;
 }
 
