@@ -28,7 +28,7 @@ export function useJobItems(searchText: string) {
 	}, [searchText]);
 	console.log(jobItems);
 
-	return [jobItemsSliced, isLoading] as const;
+	return {jobItemsSliced, isLoading} as const;
 }
 
 export function useActiveId() {
