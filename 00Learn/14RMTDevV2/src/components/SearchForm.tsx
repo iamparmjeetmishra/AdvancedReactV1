@@ -1,5 +1,12 @@
+type TSearchFormProps = {
+	searchText: string;
+	setSearchText: (searchText: string) => void;
+};
 
-export default function SearchForm({ headerEffect }) {
+export default function SearchForm({
+	setSearchText,
+	searchText,
+}: TSearchFormProps) {
 	const handleSearchForm = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 	};
@@ -7,7 +14,7 @@ export default function SearchForm({ headerEffect }) {
 	const handleSearchInput = (
 		e: React.ChangeEvent<HTMLInputElement>
 	) => {
-		headerEffect.setSearchText(e.target.value);
+		setSearchText(e.target.value);
 	};
 
 	return (
@@ -17,7 +24,7 @@ export default function SearchForm({ headerEffect }) {
 			</button>
 
 			<input
-				value={headerEffect.searchText}
+				value={searchText}
 				onChange={handleSearchInput}
 				spellCheck="false"
 				type="text"

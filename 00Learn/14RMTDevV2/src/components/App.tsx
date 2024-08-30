@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import Background from "./Background";
 import Container from "./Container";
 import Footer from "./Footer";
@@ -16,13 +16,8 @@ import { useJobItems } from "../lib/hooks";
 
 function App() {
 	const [searchText, setSearchText] = useState("");
-  const { setJobItems, isLoading, jobItemsSliced } = useJobItems(searchText)
+	const [jobItems, isLoading] = useJobItems(searchText);
 
-	const headerEffect = {
-		setJobItems,
-		searchText,
-		setSearchText,
-	};
 
 	return (
 		<>
@@ -32,18 +27,18 @@ function App() {
 					<Logo />
 					<BookmarksButton />
 				</HeaderTop>
-				<SearchForm headerEffect={headerEffect} />
+				<SearchForm searchText={searchText} setSearchText={setSearchText}  />
 			</Header>
 
 			<Container>
 				<Sidebar>
 					<SidebarTop>
 						<ResultsCount
-							count={jobItemsSliced.length > 0 ? jobItemsSliced.length : 0}
+							count={jobItems.length > 0 ? jobItems.length : 0}
 						/>
 						<Sorting />
 					</SidebarTop>
-					<JobList jobItems={jobItemsSliced} isLoading={isLoading} />
+					<JobList jobItems={jobItems} isLoading={isLoading} />
 					<Pagination />
 				</Sidebar>
 				<JobItemContent />
