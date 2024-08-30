@@ -28,7 +28,6 @@ export function useJobItems(searchText: string) {
 		};
 		fetchJobs();
 	}, [searchText]);
-	console.log(jobItems);
 
 	return {jobItemsSliced, isLoading, jobItemsNumber} as const;
 }
