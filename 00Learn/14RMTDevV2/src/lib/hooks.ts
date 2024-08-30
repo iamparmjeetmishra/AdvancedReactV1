@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { TJobItem, TJobItemData } from "./type";
 import { BASE_API_URL } from "./constants";
 import { useQuery } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { handleError } from "./utils";
 
 /* -----------------------------*/
 // export function useJobItems(searchText: string) {
@@ -60,9 +60,7 @@ export function useJobItems(searchText: string) {
 			refetchOnWindowFocus: false,
 			retry: false,
 			enabled: Boolean(searchText),
-			onError: (error) => {
-				toast.error(error.message);
-			},
+			onError: handleError,
 		}
 	);
 
@@ -145,9 +143,7 @@ export function useJobItem(id: number | null) {
 			refetchOnWindowFocus: false,
 			retry: false,
 			enabled: Boolean(id),
-			onError: (error) => {
-				toast.error(error.message)
-			},
+			onError: handleError,
 		}
 	);
 	return {
