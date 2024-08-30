@@ -40,6 +40,12 @@ const fetchJobItems = async (
 	searchText: string
 ): Promise<TJobItemsApiResponse> => {
 	const res = await fetch(`${BASE_API_URL}?search=${searchText}`);
+	
+	if (!res.ok) {
+		const errData = await res.json()
+		throw new Error(errData.description)
+	}
+	
 	const data = await res.json();
 	return data;
 };
