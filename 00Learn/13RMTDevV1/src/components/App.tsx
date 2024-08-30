@@ -8,7 +8,6 @@ function App() {
   const [searchText, setSearchText] = useState('')
   const [jobItems, setJobItems] = useState([])
   
-
   useEffect(() => {
     if (!searchText) return
     
