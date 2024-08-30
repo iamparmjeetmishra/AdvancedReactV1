@@ -6,7 +6,7 @@ export function useJobItems(searchText: string) {
 	const [jobItems, setJobItems] = useState<TJobItem[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 
-	const jobItemsNumber = jobItems.length
+	const jobItemsNumber = jobItems.length;
 
 	const jobItemsSliced = jobItems.slice(0, 7);
 
@@ -29,7 +29,7 @@ export function useJobItems(searchText: string) {
 		fetchJobs();
 	}, [searchText]);
 
-	return {jobItemsSliced, isLoading, jobItemsNumber} as const;
+	return { jobItemsSliced, isLoading, jobItemsNumber } as const;
 }
 
 export function useActiveId() {
@@ -54,17 +54,17 @@ export function useActiveId() {
 
 export function useJobItem(id: number | null) {
 	const [jobItem, setJobItem] = useState<TJobItemData | null>(null);
-	const [isLoading, setIsLoading] = useState(false)
+	const [isLoading, setIsLoading] = useState(false);
 
 	useEffect(() => {
 		if (!id) return;
 
 		const fetchData = async () => {
 			try {
-				setIsLoading(true)
+				setIsLoading(true);
 				const res = await fetch(`${BASE_API_URL}/${id}`);
 				const data = await res.json();
-				setIsLoading(false)
+				setIsLoading(false);
 				setJobItem(data.jobItem);
 			} catch (error) {
 				console.log("ListingErr:", error);
@@ -73,4 +73,17 @@ export function useJobItem(id: number | null) {
 		fetchData();
 	}, [id]);
 	return { jobItem, isLoading } as const;
+}
+
+export function useDebounce<T>(value: T, delay = 500): T {
+	const [debouncedValue, setDebouncedValue] = useState(value);
+	useEffect(() => {
+		const timerId = setTimeout(() => {
+			setDebouncedValue(value);
+		}, delay);
+
+		return () => clearTimeout(timerId);
+	}, [value, delay]);
+
+	return debouncedValue;
 }
