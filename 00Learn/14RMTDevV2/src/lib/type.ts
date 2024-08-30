@@ -7,3 +7,15 @@ export type TJobItem = {
 	daysAgo: number;
 	relevanceScore: number;
 };
+
+export type TJobItemData = TJobItem & {
+	description: string;
+	qualifications: string[];
+	duration: string;
+	salary: string;
+	location: string;
+	daysAgo: number;
+	coverImgURL: string;
+	companyURL: string;
+	reviews: string[];
+};
