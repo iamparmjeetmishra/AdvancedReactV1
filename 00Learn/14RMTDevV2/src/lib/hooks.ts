@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { TJobItem, TJobItemData } from "./type";
 import { BASE_API_URL } from "./constants";
 import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 /* -----------------------------*/
 // export function useJobItems(searchText: string) {
@@ -45,7 +46,7 @@ const fetchJobItems = async (
 		const errData = await res.json()
 		throw new Error(errData.description)
 	}
-	
+
 	const data = await res.json();
 	return data;
 };
@@ -60,7 +61,7 @@ export function useJobItems(searchText: string) {
 			retry: false,
 			enabled: Boolean(searchText),
 			onError: (error) => {
-				console.log("errFromJobItems:", error);
+				toast.error(error.message);
 			},
 		}
 	);
@@ -145,7 +146,7 @@ export function useJobItem(id: number | null) {
 			retry: false,
 			enabled: Boolean(id),
 			onError: (error) => {
-				console.log("err", error);
+				toast.error(error.message)
 			},
 		}
 	);
