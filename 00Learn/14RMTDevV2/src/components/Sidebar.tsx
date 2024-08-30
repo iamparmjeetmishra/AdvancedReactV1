@@ -1,17 +1,12 @@
-import JobList from "./JobList";
-import Pagination from "./PaginationControls";
-import ResultsCount from "./ResultsCount";
-import Sorting from "./SortingControls";
 
-export default function Sidebar({jobItems}) {
+export default function Sidebar({children}) {
   return (
     <div className="sidebar">
-      <div className="sidebar__top">
-        <ResultsCount count={jobItems.length > 0 ? jobItems.length : 0 }  />
-        <Sorting />
-      </div>
-      <JobList jobItems={jobItems}  />
-      <Pagination />
+      {children}
     </div>
   );
+}
+
+export function SidebarTop({ children }) {
+  return <div className="sidebar__top">{children}</div>
 }

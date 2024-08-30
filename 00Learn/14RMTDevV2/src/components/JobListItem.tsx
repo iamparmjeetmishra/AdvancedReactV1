@@ -1,14 +1,7 @@
+import { TJobItem } from "../lib/type";
 import BookmarkIcon from "./BookmarkIcon";
 
-type TJobItem = {
-  id: number;
-  badgeLetters: string;
-  title: string;
-  company: string;
-  date: string;
-  daysAgo: number;
-  relevanceScore: number
-}
+
 
 type TJobListprops = {
   jobItem: TJobItem
