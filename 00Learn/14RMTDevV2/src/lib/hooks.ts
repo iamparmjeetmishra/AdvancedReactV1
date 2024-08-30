@@ -6,6 +6,8 @@ export function useJobItems(searchText: string) {
 	const [jobItems, setJobItems] = useState<TJobItem[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 
+	const jobItemsNumber = jobItems.length
+
 	const jobItemsSliced = jobItems.slice(0, 7);
 
 	useEffect(() => {
@@ -28,7 +30,7 @@ export function useJobItems(searchText: string) {
 	}, [searchText]);
 	console.log(jobItems);
 
-	return {jobItemsSliced, isLoading} as const;
+	return {jobItemsSliced, isLoading, jobItemsNumber} as const;
 }
 
 export function useActiveId() {
