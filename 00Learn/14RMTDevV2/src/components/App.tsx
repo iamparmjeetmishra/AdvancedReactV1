@@ -24,7 +24,9 @@ function App() {
 	
 	// derived
 	const jobItemsNumber = jobItems?.length || 0
-	const jobItemsSliced = jobItems?.slice(0, 7) || []
+	const totalNumOfPage = jobItemsNumber / 7
+	// const jobItemsSliced = jobItems?.slice(0, 7) || []
+	const jobItemsSliced = jobItems?.slice(currentPage * 7 - 7, currentPage * 7) || []
 
 	// event
 	const handleChangePage = (direction: 'next' | 'previous') => {
@@ -55,7 +57,11 @@ function App() {
 						<Sorting />
 					</SidebarTop>
 					<JobList jobItems={jobItemsSliced} isLoading={isLoading} />
-					<Pagination onClick={handleChangePage} currentPage={currentPage} />
+					<Pagination
+						onClick={handleChangePage}
+						currentPage={currentPage}
+						totalNumOfPage={totalNumOfPage}
+					/>
 				</Sidebar>
 				<JobItemContent />
 			</Container>
