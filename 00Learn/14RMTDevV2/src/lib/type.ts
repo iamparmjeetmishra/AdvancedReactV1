@@ -20,4 +20,6 @@ export type TJobItemData = TJobItem & {
 	reviews: string[];
 };
 
+export type TPageDirection = 'next' | 'previous'
+
 export type TSortBy = 'relevant' | 'recent';
