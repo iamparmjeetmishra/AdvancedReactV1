@@ -41,10 +41,10 @@ const fetchJobItems = async (
 	searchText: string
 ): Promise<TJobItemsApiResponse> => {
 	const res = await fetch(`${BASE_API_URL}?search=${searchText}`);
-	
+
 	if (!res.ok) {
-		const errData = await res.json()
-		throw new Error(errData.description)
+		const errData = await res.json();
+		throw new Error(errData.description);
 	}
 
 	const data = await res.json();
@@ -163,4 +163,16 @@ export function useDebounce<T>(value: T, delay = 500): T {
 	}, [value, delay]);
 
 	return debouncedValue;
+}
+
+export function useLocalStorage(key: string, initialValue) {
+	const [value, setValue] = useState<number[]>(() =>
+		JSON.parse(localStorage.getItem(key) || JSON.stringify(initialValue))
+	);
+
+	useEffect(() => {
+		localStorage.setItem(key, JSON.stringify(value));
+	}, [value, key]);
+
+	return [value, setValue] as const;
 }
