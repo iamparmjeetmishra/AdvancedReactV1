@@ -5,7 +5,7 @@ export const BookmarksContext = createContext(null);
 
 export default function BookmarksContextProvider({ children }) {
 	
-	const [bookmarkedIds, setBookmarkedIds] = useLocalStorage('bookmarkedIds', [])
+	const [bookmarkedIds, setBookmarkedIds] = useLocalStorage<number[]>('bookmarkedIds', [])
 
 	console.log(bookmarkedIds);
 	const handleToggleBookmark = (id: number) => {
