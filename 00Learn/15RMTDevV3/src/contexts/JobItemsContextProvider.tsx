@@ -1,14 +1,14 @@
-import { createContext, useState } from "react";
+import { createContext, useMemo, useState } from "react";
 import { useSearchQuery, useSearchTextContext } from "../lib/hooks";
 import { TJobItem, TPageDirection, TSortBy } from "../lib/type";
 import { RESULTS_PER_PAGE } from "../lib/constants";
 
 type TJobItemsContext = {
-	jobItems: TJobItem[] | undefined ;
-	jobItemsSortedAndSliced: TJobItem[] ;
+	jobItems: TJobItem[] | undefined;
+	jobItemsSortedAndSliced: TJobItem[];
 	isLoading: boolean;
-	totalNumberOfPages: number ;
-	totalNumberOfResults: number ;
+	totalNumberOfPages: number;
+	totalNumberOfResults: number;
 	currentPage: number;
 	sortBy: TSortBy;
 	handleChangePage: (direction: TPageDirection) => void;
@@ -23,8 +23,8 @@ export default function JobItemsContextProvider({
 	children,
 }: {
 	children: React.ReactNode;
-   }) {
-   const { debouncedSearchText } = useSearchTextContext()
+}) {
+	const { debouncedSearchText } = useSearchTextContext();
 	const [currentPage, setCurrentPage] = useState(1);
 	const { jobItems, isLoading } = useSearchQuery(debouncedSearchText);
 	const [sortBy, setSortBy] = useState<TSortBy>("relevant");
@@ -32,17 +32,24 @@ export default function JobItemsContextProvider({
 	// derived
 	const totalNumberOfResults = jobItems?.length || 0;
 	const totalNumberOfPages = totalNumberOfResults / RESULTS_PER_PAGE;
-	const jobItemsSorted =
-		[...(jobItems || [])].sort((a, b) => {
-			if (sortBy === "relevant") {
-				return b.relevanceScore - a.relevanceScore;
-			} else {
-				return a.daysAgo - b.daysAgo;
-			}
-		}) || [];
-	const jobItemsSortedAndSliced = jobItemsSorted?.slice(
-		currentPage * RESULTS_PER_PAGE - RESULTS_PER_PAGE,
-		currentPage * RESULTS_PER_PAGE
+	const jobItemsSorted = useMemo(
+		() =>
+			[...(jobItems || [])].sort((a, b) => {
+				if (sortBy === "relevant") {
+					return b.relevanceScore - a.relevanceScore;
+				} else {
+					return a.daysAgo - b.daysAgo;
+				}
+			}) || [],
+		[jobItems, sortBy]
+	);
+	const jobItemsSortedAndSliced = useMemo(
+		() =>
+			jobItemsSorted?.slice(
+				currentPage * RESULTS_PER_PAGE - RESULTS_PER_PAGE,
+				currentPage * RESULTS_PER_PAGE
+			),
+		[currentPage, jobItemsSorted]
 	);
 
 	// event
