@@ -29,7 +29,7 @@ function App() {
 	const jobItemsNumber = jobItems?.length || 0;
 	const totalNumOfPage = jobItemsNumber / RESULTS_PER_PAGE;
 	const jobItemsSorted =
-		jobItems?.sort((a, b) => {
+		[...(jobItems || [])].sort((a, b) => {
 			if (sortBy === "relevant") {
 				return b.relevanceScore - a.relevanceScore;
 			} else {
@@ -40,7 +40,7 @@ function App() {
 		jobItemsSorted?.slice(
 			currentPage * RESULTS_PER_PAGE - RESULTS_PER_PAGE,
 			currentPage * RESULTS_PER_PAGE
-		) || [];
+		);
 
 	// event
 	const handleChangePage = (direction: TPageDirection) => {
