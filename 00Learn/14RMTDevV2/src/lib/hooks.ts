@@ -73,28 +73,29 @@ export function useSearchQuery(searchText: string) {
 
 /*-------------------------------*/
 
-// -----------------
+// ----------------- For fetching data in bookmark
 
 export function useJobItems(ids: number[]) {
 	const results = useQueries({
 		queries: ids.map((id) => ({
-			queryKey: ['job-item', id],
+			queryKey: ["job-item", id],
 			queryFn: () => fetchJobItem(id),
 			staleTime: 1000 * 60 * 60,
 			refetchOnWindowFocus: false,
 			retry: false,
 			enabled: Boolean(id),
 			onError: handleError,
-		}))
+		})),
 	});
-	console.log(results)
-	const jobItems = results.map(result => result.data?.jobItem).filter((jobItem) => jobItem !== undefined)
-	const isLoading = results.some((result) => result.isLoading)
-	return {jobItems, isLoading}
+	console.log(results);
+	const jobItems = results
+		.map((result) => result.data?.jobItem)
+		// .filter((jobItem) => jobItem !== undefined);
+		// .filter((jobItem) => !!jobItem);
+		.filter((jobItem) => Boolean(jobItem)) as TJobItemData[];
+	const isLoading = results.some((result) => result.isLoading);
+	return { jobItems, isLoading };
 }
-
-
-
 
 // -------------------
 
@@ -208,14 +209,13 @@ export function useLocalStorage<T>(
 	return [value, setValue] as const;
 }
 
-
 /* */
 
 export function useBookmarksContext() {
 	const context = useContext(BookmarksContext);
 	if (!context) {
 		throw new Error(
-			'useBookmarkIcon must be used within a BookmarksContextProvider'
+			"useBookmarkIcon must be used within a BookmarksContextProvider"
 		);
 	}
 	return context;
