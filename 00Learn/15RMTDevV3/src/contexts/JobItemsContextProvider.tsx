@@ -1,4 +1,4 @@
-import { createContext, useMemo, useState } from "react";
+import { createContext, useCallback, useMemo, useState } from "react";
 import { useSearchQuery, useSearchTextContext } from "../lib/hooks";
 import { TJobItem, TPageDirection, TSortBy } from "../lib/type";
 import { RESULTS_PER_PAGE } from "../lib/constants";
@@ -54,32 +54,50 @@ export default function JobItemsContextProvider({
 
 	// event
 
-	const handleChangePage = (direction: TPageDirection) => {
-		if (direction === "next") {
-			setCurrentPage((prev) => prev + 1);
-		} else if (direction === "previous") {
-			setCurrentPage((prev) => prev - 1);
-		}
-	};
+	// here we use useCallback same as useMemo but for function
+	const handleChangePage = useCallback(
+		(direction: TPageDirection) => {
+			if (direction === "next") {
+				setCurrentPage((prev) => prev + 1);
+			} else if (direction === "previous") {
+				setCurrentPage((prev) => prev - 1);
+			}
+		},
+		[]
+	);
 
-	const handleChangeSortBy = (newSortBy: TSortBy) => {
+	const handleChangeSortBy = useCallback((newSortBy: TSortBy) => {
 		setCurrentPage(1);
 		setSortBy(newSortBy);
-	};
+	}, []);
+
+	const contextValue = useMemo(
+		() => ({
+			jobItems,
+			jobItemsSortedAndSliced,
+			isLoading,
+			totalNumberOfPages,
+			totalNumberOfResults,
+			currentPage,
+			sortBy,
+			handleChangePage,
+			handleChangeSortBy,
+		}),
+		[
+			jobItems,
+			jobItemsSortedAndSliced,
+			isLoading,
+			totalNumberOfPages,
+			totalNumberOfResults,
+			currentPage,
+			sortBy,
+			handleChangePage,
+			handleChangeSortBy,
+		]
+	);
+
 	return (
-		<JobItemsContext.Provider
-			value={{
-				jobItems,
-				jobItemsSortedAndSliced,
-				isLoading,
-				totalNumberOfPages,
-				totalNumberOfResults,
-				currentPage,
-				sortBy,
-				handleChangePage,
-				handleChangeSortBy,
-			}}
-		>
+		<JobItemsContext.Provider value={contextValue}>
 			{children}
 		</JobItemsContext.Provider>
 	);
