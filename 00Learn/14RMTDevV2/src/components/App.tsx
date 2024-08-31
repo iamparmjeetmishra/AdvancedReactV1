@@ -15,7 +15,7 @@ import ResultsCount from "./ResultsCount";
 import { useDebounce, useJobItems } from "../lib/hooks";
 import { Toaster } from "react-hot-toast";
 import { RESULTS_PER_PAGE } from "../lib/constants";
-import { TSortBy } from "../lib/type";
+import { TPageDirection, TSortBy } from "../lib/type";
 
 function App() {
 	//state
@@ -43,7 +43,7 @@ function App() {
 		) || [];
 
 	// event
-	const handleChangePage = (direction: "next" | "previous") => {
+	const handleChangePage = (direction: TPageDirection) => {
 		if (direction === "next") {
 			setCurrentPage((prev) => prev + 1);
 		} else if (direction === "previous") {
