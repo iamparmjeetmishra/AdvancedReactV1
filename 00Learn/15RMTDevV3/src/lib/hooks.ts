@@ -5,6 +5,8 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { handleError } from "./utils";
 import { BookmarksContext } from "../contexts/BookmarksContextProvider";
 import { ActiveIdContext } from "../contexts/ActiveIdContextProvider";
+import { SearchTextContext } from "../contexts/SearchTextContextProvider";
+import { JobItemsContext } from "../contexts/JobItemsContextProvider";
 
 /* -----------------------------*/
 // export function useJobItems(searchText: string) {
@@ -248,6 +250,27 @@ export function useActiveIdContext() {
 	if (!context) {
 		throw new Error(
 			"ActiveIdContext must be used within a ActiveIdContextProvider"
+		);
+	}
+	return context;
+}
+
+export function useSearchTextContext() {
+	const context = useContext(SearchTextContext);
+	if (!context) {
+		throw new Error(
+			"SearchTextContext must be used within a SearchTextContextPRovider"
+		);
+	}
+	return context;
+}
+
+
+export function useJobItemsContext() {
+	const context = useContext(JobItemsContext);
+	if (!context) {
+		throw new Error(
+			"JobItemsContext must be used within a JobItemsContextPRovider"
 		);
 	}
 	return context;
