@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TJobItem, TJobItemData } from "./type";
 import { BASE_API_URL } from "./constants";
 import { useQuery } from "@tanstack/react-query";
 import { handleError } from "./utils";
+import { BookmarksContext } from "../contexts/BookmarksContextProvider";
 
 /* -----------------------------*/
 // export function useJobItems(searchText: string) {
@@ -180,4 +181,18 @@ export function useLocalStorage<T>(
 	}, [value, key]);
 
 	return [value, setValue] as const;
+}
+
+
+
+/* */
+
+export function useBookmarksContext() {
+	const context = useContext(BookmarksContext);
+	if (!context) {
+		throw new Error(
+			'useBookmarkIcon must be used within a BookmarksContextProvider'
+		);
+	}
+	return context;
 }
