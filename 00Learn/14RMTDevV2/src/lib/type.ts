@@ -19,3 +19,5 @@ export type TJobItemData = TJobItem & {
 	companyURL: string;
 	reviews: string[];
 };
+
+export type TSortBy = 'relevant' | 'recent';
