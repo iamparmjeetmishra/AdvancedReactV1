@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 import Container from "@/components/container";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,12 +20,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gray-950 text-white `}>
+      <body className={`${inter.className} overflow-y-scroll bg-gray-950 text-white `}>
         <Container>
           <Header />
           {children}
           <Footer />
         </Container>
+        <Toaster position="top-right" />
       </body>
     </html>
   );
