@@ -1,10 +1,11 @@
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import prisma from "./db";
+import toast from "react-hot-toast";
 
-import { EventoEvent } from "@prisma/client";
-
-export const TextCapitalize = (text: string) => {
-	return text.charAt(0).toUpperCase() + text.slice(1);
+export const TextCapitalize = (text: string): string => {
+	if (!text) return text;
+	return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 };
 
 export function cn(...classes: ClassValue[]) {
@@ -17,18 +18,47 @@ export async function sleep(ms: number) {
 	});
 }
 
+
+
+// Event data
+
 export async function getEvents(city: string) {
-	const response = await fetch(
-		`https://bytegrad.com/course-assets/projects/evento/api/events?city=${city}`
-	);
-	const events: EventoEvent[] = await response.json();
-	return events;
+	try {
+		const filterCity = city === 'all' ? undefined : TextCapitalize(city)
+		const events = await prisma.eventoEvent.findMany({
+			where: {
+				city: filterCity,
+			},
+			orderBy: {
+				date: "asc"
+			}
+		});
+		return events
+	} catch (error) {
+		console.log('Error Fetching events:', error)
+		toast.error('Error while fetching')
+		throw new Error('Failed to fetch events')
+	}
 }
 
+
 export async function getEvent(slug: string) {
-	const response = await fetch(
-		`https://bytegrad.com/course-assets/projects/evento/api/events/${slug}`
-	);
-	const event: EventoEvent = await response.json();
+	try {
+		const event = await prisma.eventoEvent.findUnique({
+			where: {
+				slug: slug,
+			},
+		});
+		if (!event) {
+			let msg = `Event with slug ${slug} not found`
+			toast.error(msg)
+			throw new Error(msg)
+		}
+		return event
+	} catch (error) {
+		console.log('Error fetching event', error)
+		toast.error('Failed to fetch event')
+		throw new Error('failed to fetch event')
+	}
 	return event;
 }
