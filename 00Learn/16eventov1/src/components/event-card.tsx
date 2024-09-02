@@ -1,12 +1,13 @@
 'use client'
-import { TEventoEvent } from "@/lib/types";
+import { EventoEvent } from "@prisma/client";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 
+
 type TEventCardProps = {
-	event: TEventoEvent;
+	event: EventoEvent;
 };
 
 const MotionLink = motion(Link)
