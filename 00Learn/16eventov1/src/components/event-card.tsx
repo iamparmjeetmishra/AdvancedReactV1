@@ -10,7 +10,7 @@ export default function EventCard({ event }: TEventCardProps) {
 	return (
 		<Link href={`/event/${event.slug}`} className="flex-1 basis-80 h-[380px] max-w-[500px]">
 			<section
-				className="flex flex-col w-full h-full bg-white/[3%] relative hover:scale-105 active:scale-[1.02] "
+				className="flex flex-col w-full h-full bg-white/[3%] relative state-effects"
 				key={event.id}
 			>
 				<Image
@@ -18,7 +18,7 @@ export default function EventCard({ event }: TEventCardProps) {
 					alt={event.name}
 					width={500}
 					height={280}
-					className="h-[60%] object-fit bg-white/[3%] rounded-xl overflow-hidden"
+					className="h-[60%] object-cover bg-white/[3%] rounded-xl overflow-hidden"
 				/>
 				<div className="flex flex-col flex-1 justify-center items-center">
 					<h2 className="text-2xl font-semibold">{event.name}</h2>
