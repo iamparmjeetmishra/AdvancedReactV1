@@ -1,21 +1,24 @@
-import EventList from "@/components/event-list";
+import EventsList from "@/components/events-list";
 import H1 from "@/components/h1";
-import { TEventoEvent } from "@/lib/types";
 import { TextCapitalize } from "@/lib/utils";
-import toast from "react-hot-toast";
+import { Suspense } from "react";
+import Loading from "./loading";
+import { Metadata } from "next";
 
-type TEventPageProps = {
+type TProps = {
 	params: {
 		city: string;
 	};
 };
 
-export default async function EventPage({ params }: TEventPageProps) {
-	
-	let res = await fetch(
-		"https://bytegrad.com/course-assets/projects/evento/api/events?city=austin"
-	);
-	const events: TEventoEvent[] = await res.json();
+export function generateMetadata({ params }: TProps):Metadata {
+	const city = params.city
+	return {
+		title: city === 'all' ? 'All Events' : `Events in ${TextCapitalize(city)}`
+	}
+}
+
+export default async function EventPage({ params }: TProps) {
 	const city = params.city;
 
 	return (
@@ -24,7 +27,9 @@ export default async function EventPage({ params }: TEventPageProps) {
 				{city === "all" && "All Events"}
 				{city !== "all" && `Events in ${TextCapitalize(city)}`}
 			</H1>
-			<EventList events={events} />
+			<Suspense fallback={<Loading />}>
+				<EventsList city={city} />
+			</Suspense>
 		</main>
 	);
 }
