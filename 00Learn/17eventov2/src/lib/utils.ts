@@ -1,7 +1,8 @@
 import clsx, { ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import prisma from "./db";
-import toast from "react-hot-toast";
+import { notFound } from "next/navigation";
+import { FIX_EVENT_ITEMS } from "./constants";
 
 export const TextCapitalize = (text: string): string => {
 	if (!text) return text;
@@ -18,29 +19,43 @@ export async function sleep(ms: number) {
 	});
 }
 
-
-
 // Event data
 
-export async function getEvents(city: string) {
+export async function getEvents(city: string, page = 1) {
 	try {
-		const filterCity = city === 'all' ? undefined : TextCapitalize(city)
+		const filterCity =
+			city === "all" ? undefined : TextCapitalize(city);
 		const events = await prisma.eventoEvent.findMany({
 			where: {
 				city: filterCity,
 			},
+			take: FIX_EVENT_ITEMS,
+			skip: (page - 1) * FIX_EVENT_ITEMS,
 			orderBy: {
-				date: "asc"
-			}
+				date: "asc",
+			},
 		});
-		return events
+
+		let totalCount;
+		if (city === "all") {
+			totalCount = await prisma.eventoEvent.count();
+		} else {
+			totalCount = await prisma.eventoEvent.count({
+				where: {
+					city: TextCapitalize(city),
+				},
+			});
+		}
+
+		if (!events) {
+			return notFound();
+		}
+		return { events, totalCount };
 	} catch (error) {
-		console.log('Error Fetching events:', error)
-		toast.error('Error while fetching')
-		throw new Error('Failed to fetch events')
+		console.log("Error Fetching events:", error);
+		return notFound();
 	}
 }
-
 
 export async function getEvent(slug: string) {
 	try {
@@ -50,15 +65,11 @@ export async function getEvent(slug: string) {
 			},
 		});
 		if (!event) {
-			let msg = `Event with slug ${slug} not found`
-			toast.error(msg)
-			throw new Error(msg)
+			return notFound();
 		}
-		return event
+		return event;
 	} catch (error) {
-		console.log('Error fetching event', error)
-		toast.error('Failed to fetch event')
-		throw new Error('failed to fetch event')
+		console.log("Error fetching event", error);
+		return notFound();
 	}
-	return event;
 }
