@@ -1,0 +1,1 @@
+export const FIX_EVENT_ITEMS = 6
