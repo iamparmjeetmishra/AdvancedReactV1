@@ -1,6 +1,6 @@
 import Link from "next/link";
 import EventCard from "./event-card";
-import { getEvents } from "@/lib/utils";
+import { getEvents } from "@/lib/server-utils";
 import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
 import { FIX_EVENT_ITEMS } from "@/lib/constants";
 
