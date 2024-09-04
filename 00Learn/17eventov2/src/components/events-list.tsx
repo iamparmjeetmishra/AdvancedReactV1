@@ -6,12 +6,12 @@ import { FIX_EVENT_ITEMS } from "@/lib/constants";
 
 type TEventListProps = {
 	city: string;
-	page: number;
+	page?: number;
 };
 
 export default async function EventsList({
 	city,
-	page,
+	page = 1,
 }: TEventListProps) {
 	const { events, totalCount } = await getEvents(city, page);
 
