@@ -4,6 +4,7 @@ import { TextCapitalize } from "@/lib/utils";
 import { Suspense } from "react";
 import Loading from "./loading";
 import { Metadata } from "next";
+import {z} from 'zod'
 
 type TProps = {
 	params: {
@@ -18,6 +19,8 @@ export function generateMetadata({ params }: TProps):Metadata {
 	}
 }
 
+const pageNumberSchema = z.coerce.number().int().positive().optional()
+
 type EventsPageProps = TProps & {
 	searchParams: {
 		[key: string]: string | string[] | undefined
@@ -26,8 +29,11 @@ type EventsPageProps = TProps & {
 
 export default async function EventPage({ params, searchParams }: EventsPageProps) {
 	const city = params.city;
-	const page = searchParams.page || 1;
-
+	// const page = searchParams.page || 1;
+	const parsedPage = pageNumberSchema.safeParse(searchParams.page)
+	if (!parsedPage.success) {
+		throw new Error('Invalid Page number')
+	}
 
 	return (
 		<main className="flex flex-col items-center py-24 px-[20px] min-h-[110vh]">
@@ -35,8 +41,8 @@ export default async function EventPage({ params, searchParams }: EventsPageProp
 				{city === "all" && "All Events"}
 				{city !== "all" && `Events in ${TextCapitalize(city)}`}
 			</H1>
-			<Suspense key={city + page} fallback={<Loading />}>
-				<EventsList city={city} page={+page} />
+			<Suspense key={city + parsedPage.data} fallback={<Loading />}>
+				<EventsList city={city} page={parsedPage.data} />
 			</Suspense>
 		</main>
 	);
