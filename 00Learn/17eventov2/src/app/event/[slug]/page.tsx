@@ -19,6 +19,20 @@ export async function generateMetadata({
 	};
 }
 
+export async function generateStaticParams() {
+	return [
+		{
+			slug: "dj-practice-session",
+		},
+		{
+			slug: 'science-space-expo'
+		},
+		{
+			slug: 'global-food-festival'
+		}
+	];
+}
+
 export default async function EventPage({ params }: TProps) {
 	const { slug } = params;
 	const event = await getEvent(slug);
