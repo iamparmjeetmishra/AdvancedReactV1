@@ -20,7 +20,7 @@ export default function SearchContextProvider({
 }: TSearchContextProvider) {
 	//state
    const [searchQuery, setSearchQuery] = useState("");
-   console.log(searchQuery)
+   // console.log(searchQuery)
 
 	//events
 	const handleChangeSearchQuery = (newValue: string) => {
