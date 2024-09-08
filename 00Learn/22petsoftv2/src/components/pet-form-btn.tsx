@@ -1,18 +1,13 @@
-
+import { TPetBtnAction } from "@/lib/types";
 import { Button } from "./ui/button";
-import { useFormStatus } from "react-dom";
 
 type TPetFormBtnProps = {
-   actionType: "add" | "edit";
-}
+	actionType: TPetBtnAction;
+};
 
-export default function PetFormBtn({
-   actionType
-}: TPetFormBtnProps) {
-	const { pending } = useFormStatus()
-
+export default function PetFormBtn({ actionType }: TPetFormBtnProps) {
 	return (
-		<Button disabled={pending} type="submit">
+		<Button type="submit">
 			{actionType === "add" ? "Add a new pet" : "Edit pet"}
 		</Button>
 	);
