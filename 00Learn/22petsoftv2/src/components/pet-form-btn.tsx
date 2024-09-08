@@ -9,7 +9,8 @@ type TPetFormBtnProps = {
 export default function PetFormBtn({
    actionType
 }: TPetFormBtnProps) {
-   const { pending } = useFormStatus()
+	const { pending } = useFormStatus()
+
 	return (
 		<Button disabled={pending} type="submit">
 			{actionType === "add" ? "Add a new pet" : "Edit pet"}

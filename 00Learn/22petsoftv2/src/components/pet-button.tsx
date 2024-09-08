@@ -15,6 +15,7 @@ type action = "add" | "edit" | "checkout";
 
 type PetButtonProp = {
 	actionType: action;
+	disabled?: boolean;
 	className?: string;
    onClick?: () => void;
    
@@ -22,6 +23,7 @@ type PetButtonProp = {
 
 export default function PetButton({
 	actionType,
+	disabled,
 	className,
 	onClick,
 }: PetButtonProp) {
@@ -30,6 +32,7 @@ export default function PetButton({
 	if (actionType === "checkout") {
 		return (
 			<Button
+				disabled={disabled}
 				onClick={onClick}
 				className={className}
 				variant="secondary"
