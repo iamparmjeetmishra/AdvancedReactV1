@@ -1,21 +1,15 @@
 "use server";
 
 import prisma from "@/lib/db";
-import { sleep } from "@/lib/utils";
+import { TPet, TPetEssentials } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 
 
-export async function addPet(formData) {
-	await sleep(2000);
+export async function addPet(pet: TPetEssentials) {
+	// await sleep(2000);
 	try {
 		await prisma.pet.create({
-			data: {
-				name: formData.get("name"),
-				ownerName: formData.get("ownerName"),
-				imageUrl: formData.get("imageUrl") || "/pet-placeholder.png",
-				age: parseInt(formData.get("age")),
-				notes: formData.get("notes"),
-			},
+			data: pet,
 		});
 	} catch (error) {
 		return {
@@ -26,19 +20,13 @@ export async function addPet(formData) {
 }
 
 
-export async function editPet(petId, formData) {
+export async function editPet(petId: TPet['id'], newPetData: TPetEssentials) {
    try {
       await prisma.pet.update({
          where: {
             id: petId,
          },
-         data: {
-            name: formData.get("name"),
-				ownerName: formData.get("ownerName"),
-				imageUrl: formData.get("imageUrl") || "/pet-placeholder.png",
-				age: parseInt(formData.get("age")),
-				notes: formData.get("notes"),
-         }
+         data: newPetData,
       })
    } catch (error) {
       return {
@@ -48,7 +36,7 @@ export async function editPet(petId, formData) {
 	revalidatePath("/app", "layout");
 }
 
-export async function checkOutPet(petId) {
+export async function checkOutPet(petId: TPet["id"]) {
    try {
       await prisma.pet.delete({
          where: {
