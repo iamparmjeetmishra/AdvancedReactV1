@@ -4,6 +4,7 @@ import { PetProp } from "@/lib/types";
 import Image from "next/image";
 import Logo from "./logo";
 import PetButton from "./pet-button";
+import { checkOutPet } from "@/actions/actions";
 
 export default function PetDetails() {
 	const { selectedPet } = usePetContext();
@@ -27,7 +28,6 @@ type Pet = {
 };
 
 function TopBar({ pet }: Pet) {
-	const { handleCheckoutPet } = usePetContext()
 	return (
 		<div className="flex items-center bg-white px-8 py-5 border-b border-lightBlack">
 			<Image
@@ -41,8 +41,11 @@ function TopBar({ pet }: Pet) {
 				{pet?.name}
 			</h2>
 			<div className="ml-auto flex gap-4">
-				<PetButton actionType={'edit'} />
-				<PetButton actionType={'checkout'} onClick={() => handleCheckoutPet(pet.id)} />
+				<PetButton actionType={"edit"} />
+				<PetButton
+					actionType={"checkout"}
+					onClick={ async() => await checkOutPet(pet.id)}
+				/>
 			</div>
 		</div>
 	);
@@ -75,12 +78,11 @@ function Notes({ pet }: Pet) {
 	);
 }
 
-
 function EmptyView() {
 	return (
 		<div className="flex flex-col items-center justify-center h-full">
 			<Logo />
 			<p className="text-2xl font-semibold">No Pet Selected</p>
 		</div>
-	)
+	);
 }

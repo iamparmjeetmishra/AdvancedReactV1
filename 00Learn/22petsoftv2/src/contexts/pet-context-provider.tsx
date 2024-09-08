@@ -1,4 +1,5 @@
 "use client";
+import { addPet } from "@/actions/actions";
 import { PetProp } from "@/lib/types";
 import { createContext, useState } from "react";
 
@@ -10,23 +11,23 @@ type PetContextProviderProps = {
 type TPetContext = {
 	pets: PetProp[];
 	selectedPet: PetProp | undefined;
-	selectedPetId: number | null;
+	selectedPetId: string | null;
 	numberOfPets: number;
-	handleChangeSelectedPetId: (id: number) => void;
-	handleCheckoutPet: (id: number) => void;
-	handleAddPet: (newPet: PetProp) => void;
-	handleEditPet: (petId: number, newPetData: PetProp) => void
+	handleChangeSelectedPetId: (id: string) => void;
+	handleCheckoutPet: (id: string) => void;
+	handleAddPet: (newPet: Omit<PetProp, "id">) => void;
+	handleEditPet: (petId: string, newPetData: Omit<PetProp, "id">) => void
 };
 
 export const PetContext = createContext<TPetContext | null>(null);
 
 export default function PetContextProvider({
 	children,
-	data,
+	data: pets,
 }: PetContextProviderProps) {
 	// state
-	const [pets, setPets] = useState(data);
-	const [selectedPetId, setSelectedPetId] = useState<number | null>(
+
+	const [selectedPetId, setSelectedPetId] = useState<string | null>(
 		null
 	);
 
@@ -37,24 +38,25 @@ export default function PetContextProvider({
 	const numberOfPets = pets.length;
 
 	//events
-	const handleChangeSelectedPetId = (id: number) => {
+	const handleChangeSelectedPetId = (id: string) => {
 		setSelectedPetId(id);
 	};
 
-	const handleCheckoutPet = (id: number) => {
+	const handleCheckoutPet = (id: string) => {
 		setPets((prev) => prev.filter((pet) => pet.id !== id));
 		setSelectedPetId(null);
 	};
 
-	const handleAddPet = (newPet: PetProp) => {
-		setPets((prev) => [...prev, newPet]);
+	const handleAddPet = async (newPet: Omit<PetProp, "id">) => {
+		await addPet(newPet)
 	};
 
-	const handleEditPet = (petId: number, newPetData: PetProp) => {
+	const handleEditPet = (petId: string, newPetData: Omit<PetProp, "id">) => {
 		setPets((prev) =>
 			prev.map((pet) => {
 				if (pet.id === petId) {
 					return {
+						id: petId,
 						...newPetData,
 					};
 				}
