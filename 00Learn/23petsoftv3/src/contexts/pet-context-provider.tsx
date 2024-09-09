@@ -72,6 +72,8 @@ export default function PetContextProvider({
 		if (error) {
 			toast.warning(error.message);
 			return;
+		} else {
+			toast.success(`'Pet added: ${newPet}`)
 		}
 	};
 
@@ -87,6 +89,8 @@ export default function PetContextProvider({
 		if (error) {
 			toast.warning(error.message);
 			return;
+		} else {
+			toast.success(`'Data modified'`)
 		}
 	};
 
@@ -96,6 +100,8 @@ export default function PetContextProvider({
 		if (error) {
 			toast.warning(error.message);
 			return;
+		} else {
+			toast.success(`'Pet removed'`)
 		}
 		setSelectedPetId(null);
 	};

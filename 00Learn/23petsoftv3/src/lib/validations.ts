@@ -31,3 +31,5 @@ export const petFormSchema = z.object({
    ...data,
    imageUrl: data.imageUrl || PET_PLACEHOLDER
 }))
+
+export const petIdSchema = z.string().cuid()
