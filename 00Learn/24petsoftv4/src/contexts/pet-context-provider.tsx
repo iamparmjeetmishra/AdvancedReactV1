@@ -73,7 +73,8 @@ export default function PetContextProvider({
 			toast.warning(error.message);
 			return;
 		} else {
-			toast.success(`'Pet added: ${newPet}`)
+			console.log(newPet)
+			toast.success(`'Pet added: ${newPet.name}`)
 		}
 	};
 
