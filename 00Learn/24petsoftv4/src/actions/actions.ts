@@ -101,7 +101,13 @@ export async function editPet(petId: TPet['id'], newPetData: TPetEssentials) {
 }
 
 export async function checkOutPet(petId: TPet["id"]) {
+   // auth check
+   const session = await auth()
+   if (!session?.user) {
+      redirect('/login')
+   }
 
+   // validation
    const validatedId = petIdSchema.safeParse(petId)
 
    if (!validatedId.success) {
@@ -110,6 +116,26 @@ export async function checkOutPet(petId: TPet["id"]) {
       }
    }
 
+   // authorization check ( user owns pet)
+   const pet = await prisma.pet.findUnique({
+      where: {
+         id: validatedId.data,
+      }
+   })
+
+   if (!pet) {
+      return {
+         message: 'Pet not found.'
+      }
+   }
+
+   if (pet.userId !== session.user.id) {
+      return {
+         message: 'Not authorized.'
+      }
+   }
+
+   // db mutation
    try {
       await prisma.pet.delete({
          where: {
