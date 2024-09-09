@@ -32,4 +32,13 @@ export const petFormSchema = z.object({
    imageUrl: data.imageUrl || PET_PLACEHOLDER
 }))
 
+export type TPetForm = z.infer<typeof petFormSchema>;
+
 export const petIdSchema = z.string().cuid()
+
+export const authSchema = z.object({
+	email: z.string().email(),
+	password: z.string(),
+})
+
+export type TAuth = z.infer<typeof authSchema>

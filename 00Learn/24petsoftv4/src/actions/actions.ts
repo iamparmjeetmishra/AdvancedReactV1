@@ -1,35 +1,70 @@
 "use server";
 
-import { auth, signIn, signOut } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth";
 import prisma from "@/lib/db";
-import { TPet, TPetEssentials } from "@/lib/types";
-import { petFormSchema, petIdSchema } from "@/lib/validations";
+import {
+	authSchema,
+	petFormSchema,
+	petIdSchema,
+} from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
-import { redirect } from "next/navigation";
 import { checkAuth, getPetById } from "@/lib/server-utils";
+import { redirect } from "next/navigation";
 
 // -- useraction -----
 
-export async function logIn(formData: FormData) {
-	const authData = Object.fromEntries(formData.entries());
-	console.log(authData);
-	await signIn("credentials", authData);
+export async function logIn(formData: unknown) {
+	// checking if formdata is a formdata type
+	if (!(formData instanceof FormData)) {
+		return {
+			message: "Invalid form data",
+		};
+	}
+
+	//Convert formdata to an object
+	const formDataObject = Object.fromEntries(formData.entries());
+	// validate the object
+	const validatedFormDataObject =
+		authSchema.safeParse(formDataObject);
+	if (!validatedFormDataObject.success) {
+		return {
+			message: "Invalid form data",
+		};
+	}
+
+	await signIn("credentials", validatedFormDataObject.data);
+	redirect("/app/dashboard");
 }
 
 export async function logOut() {
 	await signOut({ redirectTo: "/" });
 }
 
-export async function signUp(formData: FormData) {
-	const hashedPassword = await bcrypt.hash(
-		formData.get("password") as string,
-		10
-	);
+export async function signUp(formData: unknown) {
+	// check if formdata is a formdata type
+	if (!(formData instanceof FormData)) {
+		return {
+			message: "Invalid form data",
+		};
+	}
+	// convert formdata to plain object
+	const formDataEntries = Object.fromEntries(formData.entries());
+
+	//validation
+	const validatedFormData = authSchema.safeParse(formDataEntries);
+	if (!validatedFormData.success) {
+		return {
+			message: "Invalid form data",
+		};
+	}
+
+	const { email, password } = validatedFormData.data;
+	const hashedPassword = await bcrypt.hash(password, 10);
 
 	await prisma.user.create({
 		data: {
-			email: formData.get("email") as string,
+			email,
 			hashedPassword,
 		},
 	});
@@ -38,10 +73,10 @@ export async function signUp(formData: FormData) {
 }
 
 // ---pet action ----
-export async function addPet(pet: TPetEssentials) {
+export async function addPet(pet: unknown) {
 	// await sleep(2000);
-   const session = await checkAuth()
-   
+	const session = await checkAuth();
+
 	const validatedPet = petFormSchema.safeParse(pet);
 
 	if (!validatedPet.success) {
@@ -69,14 +104,11 @@ export async function addPet(pet: TPetEssentials) {
 	revalidatePath("/app", "layout");
 }
 
-export async function editPet(
-	petId: TPet["id"],
-	newPetData: TPetEssentials
-) {
-   // auth check
-	const session = await checkAuth()
-   
-   // validation
+export async function editPet(petId: unknown, newPetData: unknown) {
+	// auth check
+	const session = await checkAuth();
+
+	// validation
 	const validatedId = petIdSchema.safeParse(petId);
 	const validatedPet = petFormSchema.safeParse(newPetData);
 
@@ -85,21 +117,21 @@ export async function editPet(
 			message: `"Pet data is invalid: ${validatedPet.error}"`,
 		};
 	}
-   // authorization check
+	// authorization check
 
-   const pet = await getPetById(validatedId.data)
-   if (!pet) {
-      return {
-         message: 'Pet not found'
-      }
-   }
-   if (pet.userId !== session.user.id) {
-      return {
-         message: 'Not authorized to edit.'
-      }
-   }
+	const pet = await getPetById(validatedId.data);
+	if (!pet) {
+		return {
+			message: "Pet not found",
+		};
+	}
+	if (pet.userId !== session.user.id) {
+		return {
+			message: "Not authorized to edit.",
+		};
+	}
 
-   // db mutation
+	// db mutation
 	try {
 		await prisma.pet.update({
 			where: {
@@ -115,9 +147,9 @@ export async function editPet(
 	revalidatePath("/app", "layout");
 }
 
-export async function checkOutPet(petId: TPet["id"]) {
+export async function checkOutPet(petId: unknown) {
 	// auth check
-	const session = await checkAuth()
+	const session = await checkAuth();
 
 	// validation
 	const validatedId = petIdSchema.safeParse(petId);
@@ -129,7 +161,7 @@ export async function checkOutPet(petId: TPet["id"]) {
 	}
 
 	// authorization check ( user owns pet)
-	const pet = await getPetById(validatedId.data)
+	const pet = await getPetById(validatedId.data);
 	if (!pet) {
 		return {
 			message: "Pet not found.",

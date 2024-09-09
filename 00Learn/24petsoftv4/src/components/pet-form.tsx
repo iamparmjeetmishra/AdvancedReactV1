@@ -6,17 +6,15 @@ import { Textarea } from "./ui/textarea";
 import PetFormBtn from "./pet-form-btn";
 import { TPetBtnAction } from "@/lib/types";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PET_PLACEHOLDER } from "@/lib/constants";
-import { petFormSchema } from "@/lib/validations";
+import { petFormSchema, TPetForm } from "@/lib/validations";
 
 type PetFormProps = {
 	actionType: TPetBtnAction;
 	onFormSubmission: () => void;
 };
 
-type TPetForm = z.infer<typeof petFormSchema>;
 
 export default function PetForm({
 	actionType,
@@ -51,6 +49,7 @@ export default function PetForm({
 				if (!result) return;
 
 				onFormSubmission();
+				
 				const petData = getValues();
 				petData.imageUrl = petData.imageUrl || PET_PLACEHOLDER;
 
