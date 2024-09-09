@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { TPet, TPetEssentials } from "@/lib/types";
 import { petFormSchema, petIdSchema } from "@/lib/validations";
@@ -15,6 +15,9 @@ export async function logIn(formData: FormData) {
    await signIn('credentials', authData)
 }
 
+export async function logOut() {
+   await signOut({ redirectTo: '/'})
+}
 
 
 
