@@ -14,14 +14,6 @@ type PetFormProps = {
 	onFormSubmission: () => void;
 };
 
-type TPetForm = {
-	name: string;
-	ownerName: string;
-	imageUrl: string;
-	age: number;
-	notes: string;
-};
-
 const petFormSchema = z.object({
 	name: z
 		.string()
@@ -49,6 +41,8 @@ const petFormSchema = z.object({
 			.max(1000, { message: "must be less than 1000" }),
 	]),
 });
+
+type TPetForm = z.infer<typeof petFormSchema>;
 
 export default function PetForm({
 	actionType,
