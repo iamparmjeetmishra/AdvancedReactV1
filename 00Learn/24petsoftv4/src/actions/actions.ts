@@ -1,11 +1,24 @@
 "use server";
 
+import { signIn } from "@/lib/auth";
 import prisma from "@/lib/db";
 import { TPet, TPetEssentials } from "@/lib/types";
 import { petFormSchema, petIdSchema } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 
 
+// -- useraction -----
+
+export async function logIn(formData: FormData) {
+   const authData = Object.fromEntries(formData.entries())
+   console.log(authData)
+   await signIn('credentials', authData)
+}
+
+
+
+
+// ---pet action ----
 export async function addPet(pet: TPetEssentials) {
    // await sleep(2000);
    
