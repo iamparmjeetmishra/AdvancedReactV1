@@ -1,4 +1,4 @@
-import { logIn } from "@/actions/actions";
+import { logIn, signUp } from "@/actions/actions";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -9,7 +9,7 @@ type TAuthFormProps = {
 
 export default function AuthForm({type}: TAuthFormProps) {
    return <form
-      action={logIn}
+      action={type === 'login' ? logIn: signUp}
       className="flex flex-col gap-4"
    >
       <div className="space-y-1">
