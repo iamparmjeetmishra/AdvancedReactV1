@@ -8,39 +8,13 @@ import { TPetBtnAction } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PET_PLACEHOLDER } from "@/lib/constants";
+import { petFormSchema } from "@/lib/validations";
 
 type PetFormProps = {
 	actionType: TPetBtnAction;
 	onFormSubmission: () => void;
 };
-
-const petFormSchema = z.object({
-	name: z
-		.string()
-		.trim()
-		.min(2, { message: "Name must be at least 2 characters" })
-		.max(20, { message: "Must be less than 20 " }),
-	ownerName: z
-		.string()
-		.trim()
-		.min(2, { message: "Owner name must be atleast 2 characters" })
-		.max(20, { message: "must be less than 20" }),
-	imageUrl: z.union([
-		z.literal(""),
-		z
-			.string()
-			.trim()
-			.url({ message: "Image url must be a valid url" }),
-	]),
-	age: z.coerce.number().int().positive().max(99),
-	notes: z.union([
-		z.literal(""),
-		z
-			.string()
-			.trim()
-			.max(1000, { message: "must be less than 1000" }),
-	]),
-});
 
 type TPetForm = z.infer<typeof petFormSchema>;
 
@@ -54,6 +28,7 @@ export default function PetForm({
 	const {
 		register,
 		trigger,
+		getValues,
 		formState: { errors },
 	} = useForm<TPetForm>({
 		resolver: zodResolver(petFormSchema),
@@ -61,20 +36,13 @@ export default function PetForm({
 
 	return (
 		<form
-			action={async (formData) => {
+			action={async () => {
 				const result = await trigger();
 				if (!result) return;
 
 				onFormSubmission();
-				const petData = {
-					name: formData.get("name") as string,
-					ownerName: formData.get("ownerName") as string,
-					imageUrl:
-						(formData.get("imageUrl") as string) ||
-						"/pet-placeholder.png",
-					age: Number(formData.get("age")),
-					notes: formData.get("notes") as string,
-				};
+				const petData = getValues();
+				petData.imageUrl = petData.imageUrl || PET_PLACEHOLDER;
 
 				if (actionType === "add") {
 					await handleAddPet(petData);
