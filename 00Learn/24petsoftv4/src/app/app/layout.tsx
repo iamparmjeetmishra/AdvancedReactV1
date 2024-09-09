@@ -12,7 +12,8 @@ type LayoutProps = {
 
 export default async function Layout({ children }: LayoutProps) {
 	const pets = await prisma.pet.findMany()
-	console.log(pets)
+	// console.log(pets)
+	// const user = await prisma.user.findUnique()
 
 	return (
 		<>
