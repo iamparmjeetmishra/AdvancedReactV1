@@ -5,11 +5,50 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import PetFormBtn from "./pet-form-btn";
 import { TPetBtnAction } from "@/lib/types";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 type PetFormProps = {
 	actionType: TPetBtnAction;
 	onFormSubmission: () => void;
 };
+
+type TPetForm = {
+	name: string;
+	ownerName: string;
+	imageUrl: string;
+	age: number;
+	notes: string;
+};
+
+const petFormSchema = z.object({
+	name: z
+		.string()
+		.trim()
+		.min(2, { message: "Name must be at least 2 characters" })
+		.max(20, { message: "Must be less than 20 " }),
+	ownerName: z
+		.string()
+		.trim()
+		.min(2, { message: "Owner name must be atleast 2 characters" })
+		.max(20, { message: "must be less than 20" }),
+	imageUrl: z.union([
+		z.literal(""),
+		z
+			.string()
+			.trim()
+			.url({ message: "Image url must be a valid url" }),
+	]),
+	age: z.coerce.number().int().positive().max(99),
+	notes: z.union([
+		z.literal(""),
+		z
+			.string()
+			.trim()
+			.max(1000, { message: "must be less than 1000" }),
+	]),
+});
 
 export default function PetForm({
 	actionType,
@@ -18,9 +57,20 @@ export default function PetForm({
 	const { selectedPet, handleAddPet, handleEditPet } =
 		usePetContext();
 
+	const {
+		register,
+		trigger,
+		formState: { errors },
+	} = useForm<TPetForm>({
+		resolver: zodResolver(petFormSchema),
+	});
+
 	return (
 		<form
 			action={async (formData) => {
+				const result = await trigger();
+				if (!result) return;
+
 				onFormSubmission();
 				const petData = {
 					name: formData.get("name") as string,
@@ -42,60 +92,42 @@ export default function PetForm({
 		>
 			<div className="space-y-1">
 				<Label htmlFor="name">Name</Label>
-				<Input
-					id="name"
-					name="name"
-					type="text"
-					required
-					defaultValue={
-						actionType === "edit" ? selectedPet?.name : ""
-					}
-				/>
+				<Input id="name" {...register("name")} />
+				{errors.name && (
+					<span className="text-red-500">{errors.name.message}</span>
+				)}
 			</div>
 			<div className="space-y-1">
 				<Label htmlFor="ownerName">Owner name</Label>
-				<Input
-					id="ownerName"
-					name="ownerName"
-					type="text"
-					required
-					defaultValue={
-						actionType === "edit" ? selectedPet?.ownerName : ""
-					}
-				/>
+				<Input id="ownerName" {...register("ownerName")} />
+				{errors.ownerName && (
+					<span className="text-red-500">
+						{errors.ownerName.message}
+					</span>
+				)}
 			</div>
 			<div className="space-y-1">
 				<Label htmlFor="imageUrl">Image Url</Label>
-				<Input
-					id="imageUrl"
-					name="imageUrl"
-					type="text"
-					defaultValue={
-						actionType === "edit" ? selectedPet?.imageUrl : ""
-					}
-				/>
+				<Input id="imageUrl" {...register("imageUrl")} />
+				{errors.imageUrl && (
+					<span className="text-red-500">
+						{errors.imageUrl.message}
+					</span>
+				)}
 			</div>
 			<div className="space-y-1">
 				<Label htmlFor="age">Age</Label>
-				<Input
-					id="age"
-					name="age"
-					type="number"
-					required
-					defaultValue={actionType === "edit" ? selectedPet?.age : ""}
-				/>
+				<Input id="age" {...register("age")} />
+				{errors.age && (
+					<span className="text-red-500">{errors.age.message}</span>
+				)}
 			</div>
 			<div className="space-y-1">
 				<Label htmlFor="notes">Notes</Label>
-				<Textarea
-					id="notes"
-					name="notes"
-					rows={4}
-					required
-					defaultValue={
-						actionType === "edit" ? selectedPet?.notes : ""
-					}
-				/>
+				<Textarea id="notes" rows={4} {...register("notes")} />
+				{errors.notes && (
+					<span className="text-red-500">{errors.notes.message}</span>
+				)}
 			</div>
 			<div className="flex justify-end ">
 				<PetFormBtn actionType={actionType} />
@@ -103,88 +135,3 @@ export default function PetForm({
 		</form>
 	);
 }
-
-// export default function PetForm({
-// 	actionType,
-// 	onFormSubmission,
-// }: PetFormProps) {
-// 	const { selectedPet } = usePetContext();
-// 	const [error, formAction] = useFormState(addPet, {});
-
-// 	return (
-// 		<form
-// 			action={formAction}
-// 			// action={async (formData) => {
-// 			// const error = await addPet(formData)
-// 			// if (error) {
-// 			// 	toast.warning(error.message)
-// 			// 	return
-// 			// }
-// 			// onFormSubmission()
-// 			// }}
-// 			className="space-y-3"
-// 		>
-// 			{error && <p className="text-red-500">{ error.message}</p>}
-// 			<div className="space-y-1">
-// 				<Label htmlFor="name">Name</Label>
-// 				<Input
-// 					id="name"
-// 					name="name"
-// 					type="text"
-// 					required
-// 					defaultValue={
-// 						actionType === "edit" ? selectedPet?.name : ""
-// 					}
-// 				/>
-// 			</div>
-// 			<div className="space-y-1">
-// 				<Label htmlFor="ownerName">Owner name</Label>
-// 				<Input
-// 					id="ownerName"
-// 					name="ownerName"
-// 					type="text"
-// 					required
-// 					defaultValue={
-// 						actionType === "edit" ? selectedPet?.ownerName : ""
-// 					}
-// 				/>
-// 			</div>
-// 			<div className="space-y-1">
-// 				<Label htmlFor="imageUrl">Image Url</Label>
-// 				<Input
-// 					id="imageUrl"
-// 					name="imageUrl"
-// 					type="text"
-// 					defaultValue={
-// 						actionType === "edit" ? selectedPet?.imageUrl : ""
-// 					}
-// 				/>
-// 			</div>
-// 			<div className="space-y-1">
-// 				<Label htmlFor="age">Age</Label>
-// 				<Input
-// 					id="age"
-// 					name="age"
-// 					type="number"
-// 					required
-// 					defaultValue={actionType === "edit" ? selectedPet?.age : ""}
-// 				/>
-// 			</div>
-// 			<div className="space-y-1">
-// 				<Label htmlFor="notes">Notes</Label>
-// 				<Textarea
-// 					id="notes"
-// 					name="notes"
-// 					rows={4}
-// 					required
-// 					defaultValue={
-// 						actionType === "edit" ? selectedPet?.notes : ""
-// 					}
-// 				/>
-// 			</div>
-// 			<div className="flex justify-end ">
-// 				<PetFormBtn actionType={actionType} />
-// 			</div>
-// 		</form>
-// 	);
-// }
