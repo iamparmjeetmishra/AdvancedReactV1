@@ -14,7 +14,7 @@ export async function checkAuth() {
 }
 
 export async function getUserByEmail(email: TUser['email']) {
-   const user = prisma.user.findUnique({
+   const user = await prisma.user.findUnique({
       where: {
          email,
       },

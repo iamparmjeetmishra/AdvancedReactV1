@@ -11,8 +11,8 @@ type LayoutProps = {
 };
 
 export default async function Layout({ children }: LayoutProps) {
+	
 	const session = await checkAuth()
-
 	// console.log(session)
 	const pets = await getPetsByUserId(session.user.id)
 

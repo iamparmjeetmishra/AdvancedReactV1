@@ -30,19 +30,19 @@ export async function logIn(prevState: unknown, formData: unknown) {
 	}
 
 	//Convert formdata to an object
-	const formDataObject = Object.fromEntries(formData.entries());
-	// validate the object
-	const validatedFormDataObject =
-		authSchema.safeParse(formDataObject);
-	if (!validatedFormDataObject.success) {
-		return {
-			message: "Invalid form data",
-		};
-	}
+	// const formDataObject = Object.fromEntries(formData.entries());
+	// // validate the object
+	// const validatedFormDataObject =
+	// 	authSchema.safeParse(formDataObject);
+	// if (!validatedFormDataObject.success) {
+	// 	return {
+	// 		message: "Invalid form data",
+	// 	};
+	// }
 
 	try {
 		await signIn("credentials", formData);
-		// redirect("/app/dashboard");
+		redirect("/app/dashboard");
 	} catch (error) {
 		if (error instanceof AuthError) {
 			switch (error.type) {
@@ -105,14 +105,15 @@ export async function signUp(prevState: unknown, formData: unknown) {
 					message: `Email already exists`,
 				};
 			}
-		} else {
-			return {
-				message: "Could not create user.",
-			};
 		}
+		
+		return {
+			message: "Could not create user.",
+		};
 	}
 
 	await signIn("credentials", formData);
+	redirect('/app/dashboard')
 }
 
 // ---pet action ----

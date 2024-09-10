@@ -1,5 +1,4 @@
 import Logo from "@/components/logo";
-import React from "react";
 
 type TLayoutProps = {
 	children: React.ReactNode;

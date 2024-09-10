@@ -46,7 +46,9 @@ function TopBar({ pet }: Pet) {
 				<PetButton
 					actionType={"checkout"}
 					onClick={async () => await handleCheckoutPet(pet.id)}
-				/>
+				>
+					Checkout
+				</PetButton>
 			</div>
 		</div>
 	);

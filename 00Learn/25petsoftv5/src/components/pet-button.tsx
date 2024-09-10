@@ -3,13 +3,14 @@ import { PlusIcon } from "@radix-ui/react-icons";
 import { Button } from "./ui/button";
 import {
 	Dialog,
+	DialogHeader,
 	DialogContent,
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { DialogHeader } from "./ui/dialog";
 import PetForm from "./pet-form";
 import { useState } from "react";
+import { flushSync } from "react-dom";
 
 type action = "add" | "edit" | "checkout";
 
@@ -17,8 +18,8 @@ type PetButtonProp = {
 	actionType: action;
 	disabled?: boolean;
 	className?: string;
-   onClick?: () => void;
-   
+	onClick?: () => void;
+	children?: React.ReactNode;
 };
 
 export default function PetButton({
@@ -26,8 +27,9 @@ export default function PetButton({
 	disabled,
 	className,
 	onClick,
+	children,
 }: PetButtonProp) {
-   const [isFormOpen, setIsFormOpen] = useState(false)
+	const [isFormOpen, setIsFormOpen] = useState(false);
 
 	if (actionType === "checkout") {
 		return (
@@ -37,24 +39,20 @@ export default function PetButton({
 				className={className}
 				variant="secondary"
 			>
-				Checkout
+				{children}
 			</Button>
 		);
 	}
 	return (
-		<Dialog open={isFormOpen} onOpenChange={setIsFormOpen} >
+		<Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
 			<DialogTrigger asChild>
 				{actionType === "add" ? (
-					<Button onClick={onClick} className={className} size="icon">
+					<Button className={className} size="icon">
 						<PlusIcon />
 					</Button>
 				) : (
-					<Button
-						onClick={onClick}
-						className={className}
-						variant="secondary"
-					>
-						Edit
+					<Button className={className} variant="secondary">
+						{children}
 					</Button>
 				)}
 			</DialogTrigger>
@@ -64,10 +62,14 @@ export default function PetButton({
 						{actionType === "add" ? "Add a new pet" : "Edit pet"}
 					</DialogTitle>
 				</DialogHeader>
-            <PetForm
-               actionType={actionType}
-               onFormSubmission={() => setIsFormOpen(false)}
-            />
+				<PetForm
+					actionType={actionType}
+					onFormSubmission={() => {
+						flushSync(() => {
+							setIsFormOpen(false);
+						});
+					}}
+				/>
 			</DialogContent>
 		</Dialog>
 	);

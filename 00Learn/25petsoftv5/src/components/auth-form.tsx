@@ -6,7 +6,7 @@ import AuthFormBtn from "./auth-form-btn";
 import { useFormState } from "react-dom";
 
 type TAuthFormProps = {
-	type: "login" | "signup";
+	type: "logIn" | "signUp";
 };
 
 export default function AuthForm({ type }: TAuthFormProps) {
@@ -17,7 +17,7 @@ export default function AuthForm({ type }: TAuthFormProps) {
 	const [logInError, dispatchLogIn] = useFormState(logIn, undefined);
 	return (
 		<form
-			action={type === "login" ? dispatchLogIn : dispatchSignup}
+			action={type === "logIn" ? dispatchLogIn : dispatchSignup}
 			className="flex flex-col gap-4"
 		>
 			<div className="space-y-1">
