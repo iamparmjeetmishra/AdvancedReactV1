@@ -7,7 +7,7 @@ import PetFormBtn from "./pet-form-btn";
 import { TPetBtnAction } from "@/lib/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PET_PLACEHOLDER } from "@/lib/constants";
+import { DEFAULT_PET_IMAGE } from "@/lib/constants";
 import { petFormSchema, TPetForm } from "@/lib/validations";
 
 type PetFormProps = {
@@ -51,7 +51,7 @@ export default function PetForm({
 				onFormSubmission();
 				
 				const petData = getValues();
-				petData.imageUrl = petData.imageUrl || PET_PLACEHOLDER;
+				petData.imageUrl = petData.imageUrl || DEFAULT_PET_IMAGE;
 
 				if (actionType === "add") {
 					await handleAddPet(petData);

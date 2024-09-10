@@ -17,7 +17,7 @@ export default function PaymentPage({ searchParams }: TPaymentProps) {
 	const router = useRouter()
 	return (
 		<main className="flex flex-col gap-3 items-center">
-			<H1>PetSoft access requires payment</H1>
+			<H1>PetCare access requires payment</H1>
 			{searchParams.success && (
 				<>
 					<p className="text-green-700">

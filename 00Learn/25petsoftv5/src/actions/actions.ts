@@ -1,7 +1,8 @@
 "use server";
 
-import { signIn, signOut } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth-no-edge";
 import prisma from "@/lib/db";
+// import { sleep } from "@/lib/utils";
 import {
 	authSchema,
 	petFormSchema,
@@ -9,40 +10,25 @@ import {
 } from "@/lib/validations";
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
+import { redirect } from "next/navigation";
 import { checkAuth, getPetById } from "@/lib/server-utils";
 import { Prisma } from "@prisma/client";
 import { AuthError } from "next-auth";
-import { sleep } from "@/lib/utils";
-import { redirect } from "next/navigation";
-
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-// -- useraction -----
+// --- user actions ---
 
 export async function logIn(prevState: unknown, formData: unknown) {
-	// checking if formdata is a formdata type
 	if (!(formData instanceof FormData)) {
 		return {
-			message: "Invalid form data",
+			message: "Invalid form data.",
 		};
 	}
 
-	//Convert formdata to an object
-	// const formDataObject = Object.fromEntries(formData.entries());
-	// // validate the object
-	// const validatedFormDataObject =
-	// 	authSchema.safeParse(formDataObject);
-	// if (!validatedFormDataObject.success) {
-	// 	return {
-	// 		message: "Invalid form data",
-	// 	};
-	// }
-
 	try {
 		await signIn("credentials", formData);
-		redirect("/app/dashboard");
 	} catch (error) {
 		if (error instanceof AuthError) {
 			switch (error.type) {
@@ -53,43 +39,37 @@ export async function logIn(prevState: unknown, formData: unknown) {
 				}
 				default: {
 					return {
-						message: "Error: Could not signin.",
+						message: "Error. Could not sign in.",
 					};
 				}
 			}
 		}
-		throw error;
+
+		throw error; // nextjs redirects throws error, so we need to rethrow it
 	}
-
-	
-}
-
-export async function logOut() {
-	await sleep(1000)
-	await signOut({ redirectTo: "/" });
 }
 
 export async function signUp(prevState: unknown, formData: unknown) {
-	// check if formdata is a formdata type
+	// check if formData is a FormData type
 	if (!(formData instanceof FormData)) {
 		return {
-			message: "Invalid form data",
+			message: "Invalid form data.",
 		};
 	}
-	// convert formdata to plain object
+
+	// convert formData to a plain object
 	const formDataEntries = Object.fromEntries(formData.entries());
 
-	//validation
+	// validation
 	const validatedFormData = authSchema.safeParse(formDataEntries);
 	if (!validatedFormData.success) {
 		return {
-			message: "Invalid form data",
+			message: "Invalid form data.",
 		};
 	}
 
 	const { email, password } = validatedFormData.data;
 	const hashedPassword = await bcrypt.hash(password, 10);
-
 	try {
 		await prisma.user.create({
 			data: {
@@ -98,34 +78,35 @@ export async function signUp(prevState: unknown, formData: unknown) {
 			},
 		});
 	} catch (error) {
-		console.log(error);
 		if (error instanceof Prisma.PrismaClientKnownRequestError) {
 			if (error.code === "P2002") {
 				return {
-					message: `Email already exists`,
+					message: "Email already exists.",
 				};
 			}
 		}
-		
+
 		return {
 			message: "Could not create user.",
 		};
 	}
 
 	await signIn("credentials", formData);
-	redirect('/app/dashboard')
 }
 
-// ---pet action ----
+export async function logOut() {
+	await signOut({ redirectTo: "/" });
+}
+
+// --- pet actions ---
+
 export async function addPet(pet: unknown) {
-	// await sleep(2000);
 	const session = await checkAuth();
 
 	const validatedPet = petFormSchema.safeParse(pet);
-
 	if (!validatedPet.success) {
 		return {
-			message: `"Pet data is invalid: ${validatedPet.error}"`,
+			message: "Invalid pet data.",
 		};
 	}
 
@@ -141,120 +122,122 @@ export async function addPet(pet: unknown) {
 			},
 		});
 	} catch (error) {
+		console.log(error);
 		return {
-			message: `"Could not add pet.", ${error}`,
+			message: "Could not add pet.",
 		};
 	}
+
 	revalidatePath("/app", "layout");
 }
 
 export async function editPet(petId: unknown, newPetData: unknown) {
-	// auth check
+	// authentication check
 	const session = await checkAuth();
 
 	// validation
-	const validatedId = petIdSchema.safeParse(petId);
+	const validatedPetId = petIdSchema.safeParse(petId);
 	const validatedPet = petFormSchema.safeParse(newPetData);
 
-	if (!validatedId.success || !validatedPet.success) {
+	if (!validatedPetId.success || !validatedPet.success) {
 		return {
-			message: `"Pet data is invalid: ${validatedPet.error}"`,
+			message: "Invalid pet data.",
 		};
 	}
+
 	// authorization check
-
-	const pet = await getPetById(validatedId.data);
-	if (!pet) {
-		return {
-			message: "Pet not found",
-		};
-	}
-	if (pet.userId !== session.user.id) {
-		return {
-			message: "Not authorized to edit.",
-		};
-	}
-
-	// db mutation
-	try {
-		await prisma.pet.update({
-			where: {
-				id: validatedId.data,
-			},
-			data: validatedPet.data,
-		});
-	} catch (error) {
-		return {
-			message: `"Could not edit pet.", ${error}`,
-		};
-	}
-	revalidatePath("/app", "layout");
-}
-
-export async function checkOutPet(petId: unknown) {
-	// auth check
-	const session = await checkAuth();
-
-	// validation
-	const validatedId = petIdSchema.safeParse(petId);
-
-	if (!validatedId.success) {
-		return {
-			message: `"Unable to removed Pet: ${validatedId.error}"`,
-		};
-	}
-
-	// authorization check ( user owns pet)
-	const pet = await getPetById(validatedId.data);
+	const pet = await getPetById(validatedPetId.data);
 	if (!pet) {
 		return {
 			message: "Pet not found.",
 		};
 	}
-
 	if (pet.userId !== session.user.id) {
 		return {
 			message: "Not authorized.",
 		};
 	}
 
-	// db mutation
+	// database mutation
+	try {
+		await prisma.pet.update({
+			where: {
+				id: validatedPetId.data,
+			},
+			data: validatedPet.data,
+		});
+	} catch (error) {
+		return {
+			message: "Could not edit pet.",
+		};
+	}
+
+	revalidatePath("/app", "layout");
+}
+
+export async function deletePet(petId: unknown) {
+	// authentication check
+	const session = await checkAuth();
+
+	// validation
+	const validatedPetId = petIdSchema.safeParse(petId);
+	if (!validatedPetId.success) {
+		return {
+			message: "Invalid pet data.",
+		};
+	}
+
+	// authorization check
+	const pet = await getPetById(validatedPetId.data);
+	if (!pet) {
+		return {
+			message: "Pet not found.",
+		};
+	}
+	if (pet.userId !== session.user.id) {
+		return {
+			message: "Not authorized.",
+		};
+	}
+
+	// database mutation
 	try {
 		await prisma.pet.delete({
 			where: {
-				id: validatedId.data,
+				id: validatedPetId.data,
 			},
 		});
 	} catch (error) {
 		return {
-			message: `Could not delete Pet. ${error}`,
+			message: "Could not delete pet.",
 		};
 	}
+
 	revalidatePath("/app", "layout");
 }
 
-
-
-// _-----payments-----
+// --- payment actions ---
 
 export async function createCheckoutSession() {
-	//auth check
-	const session = await checkAuth()
+	// authentication check
+	const session = await checkAuth();
+
+	console.log(session.user.email);
 
 	// create checkout session
-	const checkOutSession = await stripe.checkout.sessions.create({
+	const checkoutSession = await stripe.checkout.sessions.create({
 		customer_email: session.user.email,
 		line_items: [
 			{
-				price: process.env.STRIPE_PRICE_ID,
+				price: "price_1OfpJ7FIW685mC8GCahpbCed",
 				quantity: 1,
-			}
+			},
 		],
-		mode: 'payment',
-		success_url: `${process.env.BASE_URL}/payment?success=true`,
-		cancel_url: `${process.env.BASE_URL}/payment?cancelled=true`,
-	})
+		mode: "payment",
+		success_url: `${process.env.CANONICAL_URL}/payment?success=true`,
+		cancel_url: `${process.env.CANONICAL_URL}/payment?cancelled=true`,
+	});
 
 	// redirect user
-	redirect(checkOutSession.url)
+	redirect(checkoutSession.url);
 }

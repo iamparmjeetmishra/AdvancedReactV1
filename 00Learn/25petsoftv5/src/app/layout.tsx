@@ -16,8 +16,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-	title: "PetSoft - Pet Daycare software",
-	description: "Take care of people's pets responsibly with PetSoft.",
+	title: "PetCare - Pet Daycare software",
+	description: "Take care of people's pets responsibly with PetCare.",
 };
 
 export default function RootLayout({

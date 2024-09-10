@@ -2,7 +2,7 @@ import { Pet, User } from "@prisma/client";
 
 export type TPet = Pet;
 
-export type TPetEssentials = Omit<
+export type PetEssentials = Omit<
 	Pet,
 	"id" | "createdAt" | "updatedAt" | "userId"
 >;
