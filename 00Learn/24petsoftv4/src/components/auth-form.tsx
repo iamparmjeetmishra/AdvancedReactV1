@@ -1,28 +1,49 @@
+"use client";
 import { logIn, signUp } from "@/actions/actions";
-import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import AuthFormBtn from "./auth-form-btn";
+import { useFormState } from "react-dom";
 
 type TAuthFormProps = {
-   type: "login" | "signup"
-}
+	type: "login" | "signup";
+};
 
-export default function AuthForm({type}: TAuthFormProps) {
-   return <form
-      action={type === 'login' ? logIn: signUp}
-      className="flex flex-col gap-4"
-   >
-      <div className="space-y-1">
-         <Label htmlFor="email">Email</Label>
-         <Input id="email" name="email" type="email" required />
-      </div>
-      <div className="space-y-1">
-         <Label htmlFor="password">Passowrd</Label>
-         <Input id="password" name="password" type="password" required />
-      </div>
-      <Button className="mb-4">
-         {type === 'login' ? 'Log In' : "Sign Up"}
-      </Button>
-   </form>;
+export default function AuthForm({ type }: TAuthFormProps) {
+	const [signUpError, dispatchSignup] = useFormState(
+		signUp,
+		undefined
+	);
+	const [logInError, dispatchLogIn] = useFormState(logIn, undefined);
+	return (
+		<form
+			action={type === "login" ? dispatchLogIn : dispatchSignup}
+			className="flex flex-col gap-4"
+		>
+			<div className="space-y-1">
+				<Label htmlFor="email">Email</Label>
+				<Input id="email" name="email" type="email" required />
+			</div>
+			<div className="space-y-1">
+				<Label htmlFor="password">Passowrd</Label>
+				<Input
+					id="password"
+					name="password"
+					type="password"
+					required
+				/>
+			</div>
+			<AuthFormBtn type={type} />
+			{signUpError && (
+				<p className="text-red-500 text-sm">
+					{signUpError.message}
+				</p>
+			)}
+         {logInError && (
+				<p className="text-red-500 text-sm">
+					{logInError.message}
+				</p>
+			)}
+		</form>
+	);
 }
-   

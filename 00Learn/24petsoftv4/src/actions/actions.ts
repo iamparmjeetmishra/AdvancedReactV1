@@ -11,10 +11,13 @@ import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { checkAuth, getPetById } from "@/lib/server-utils";
 import { redirect } from "next/navigation";
+import { Prisma } from "@prisma/client";
+import { AuthError } from "next-auth";
+import { sleep } from "@/lib/utils";
 
 // -- useraction -----
 
-export async function logIn(formData: unknown) {
+export async function logIn(prevState: unknown, formData: unknown) {
 	// checking if formdata is a formdata type
 	if (!(formData instanceof FormData)) {
 		return {
@@ -33,15 +36,36 @@ export async function logIn(formData: unknown) {
 		};
 	}
 
-	await signIn("credentials", validatedFormDataObject.data);
-	redirect("/app/dashboard");
+	try {
+		await signIn("credentials", formData);
+		// redirect("/app/dashboard");
+	} catch (error) {
+		if (error instanceof AuthError) {
+			switch (error.type) {
+				case "CredentialsSignin": {
+					return {
+						message: "Invalid credentials.",
+					};
+				}
+				default: {
+					return {
+						message: "Error: Could not signin.",
+					};
+				}
+			}
+		}
+		throw error;
+	}
+
+	
 }
 
 export async function logOut() {
+	await sleep(1000)
 	await signOut({ redirectTo: "/" });
 }
 
-export async function signUp(formData: unknown) {
+export async function signUp(prevState: unknown, formData: unknown) {
 	// check if formdata is a formdata type
 	if (!(formData instanceof FormData)) {
 		return {
@@ -62,12 +86,27 @@ export async function signUp(formData: unknown) {
 	const { email, password } = validatedFormData.data;
 	const hashedPassword = await bcrypt.hash(password, 10);
 
-	await prisma.user.create({
-		data: {
-			email,
-			hashedPassword,
-		},
-	});
+	try {
+		await prisma.user.create({
+			data: {
+				email,
+				hashedPassword,
+			},
+		});
+	} catch (error) {
+		console.log(error);
+		if (error instanceof Prisma.PrismaClientKnownRequestError) {
+			if (error.code === "P2002") {
+				return {
+					message: `Email already exists`,
+				};
+			}
+		} else {
+			return {
+				message: "Could not create user.",
+			};
+		}
+	}
 
 	await signIn("credentials", formData);
 }
