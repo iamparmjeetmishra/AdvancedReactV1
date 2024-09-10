@@ -10,10 +10,14 @@ import {
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { checkAuth, getPetById } from "@/lib/server-utils";
-// import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { AuthError } from "next-auth";
 import { sleep } from "@/lib/utils";
+import { redirect } from "next/navigation";
+
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY)
 
 // -- useraction -----
 
@@ -226,4 +230,30 @@ export async function checkOutPet(petId: unknown) {
 		};
 	}
 	revalidatePath("/app", "layout");
+}
+
+
+
+// _-----payments-----
+
+export async function createCheckoutSession() {
+	//auth check
+	const session = await checkAuth()
+
+	// create checkout session
+	const checkOutSession = await stripe.checkout.sessions.create({
+		customer_email: session.user.email,
+		line_items: [
+			{
+				price: process.env.STRIPE_PRICE_ID,
+				quantity: 1,
+			}
+		],
+		mode: 'payment',
+		success_url: `${process.env.BASE_URL}/payment?success=true`,
+		cancel_url: `${process.env.BASE_URL}/payment?cancelled=true`,
+	})
+
+	// redirect user
+	redirect(checkOutSession.url)
 }
