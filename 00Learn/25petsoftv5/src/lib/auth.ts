@@ -53,20 +53,30 @@ const config = {
 			if (!isLoggedIn && isTryingToAccessApp) {
 				return false;
 			}
-			if (isLoggedIn && isTryingToAccessApp) {
+			if (
+				isLoggedIn &&
+				isTryingToAccessApp &&
+				!auth?.user.hasAccess
+			) {
+				return Response.redirect(
+					new URL("/payment", request.nextUrl)
+				);
+			}
+			if (isLoggedIn && isTryingToAccessApp && auth?.user.hasAccess) {
 				return true;
 			}
 
 			if (isLoggedIn && !isTryingToAccessApp) {
 				if (
-					request.nextUrl.pathname.includes("/login") ||
-					request.nextUrl.pathname.includes("/signup")
+					(request.nextUrl.pathname.includes("/login") ||
+						request.nextUrl.pathname.includes("/signup")) &&
+					!auth?.user.hasAccess
 				) {
 					return Response.redirect(
 						new URL("/payment", request.nextUrl)
 					);
 				}
-				return true
+				return true;
 			}
 
 			if (!isLoggedIn && !isTryingToAccessApp) {
@@ -78,12 +88,14 @@ const config = {
 			if (user) {
 				// on signin
 				token.userId = user.id;
+				token.hasAccess = user.hasAccess;
 			}
 			return token;
 		},
 		session: ({ session, token }) => {
 			if (session.user) {
 				session.user.id = token.userId;
+				session.user.hasAccess = token.hasAcess;
 			}
 			return session;
 		},
