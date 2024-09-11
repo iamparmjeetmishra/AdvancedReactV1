@@ -1,16 +1,21 @@
-import { useActiveIdContext, useJobItemsContext } from "../lib/hooks";
+import { useActiveIdContext } from "../lib/hooks";
+import { TJobItem } from "../lib/type";
 import JobListItem from "./JobListItem";
 import Spinner from "./Spinner";
 
+type JobListProps = {
+	jobItems: TJobItem[];
+	isLoading: boolean;
+};
 
-export function JobList() {
+export function JobList({ jobItems, isLoading }: JobListProps) {
 	const { activeId: id } = useActiveIdContext();
-	const { jobItemsSortedAndSliced, isLoading} = useJobItemsContext()
+
 	return (
 		<ul className="job-list">
 			{isLoading && <Spinner />}
 			{!isLoading &&
-				jobItemsSortedAndSliced?.map((jobItem) => (
+				jobItems?.map((jobItem) => (
 					<JobListItem
 						key={jobItem.id}
 						jobItem={jobItem}

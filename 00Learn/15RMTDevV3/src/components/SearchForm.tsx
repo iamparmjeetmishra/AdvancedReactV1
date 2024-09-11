@@ -6,9 +6,7 @@ export default function SearchForm() {
 
 	return (
 		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-			}}
+			onSubmit={(e) => {e.preventDefault()}}
 			className="search"
 		>
 			<button type="submit">

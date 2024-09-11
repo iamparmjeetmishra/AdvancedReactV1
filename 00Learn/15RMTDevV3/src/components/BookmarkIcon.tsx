@@ -6,19 +6,21 @@ type TBookmarkIconProps = {
 };
 
 export default function BookmarkIcon({ id }: TBookmarkIconProps) {
-  const {bookmarkedIds, handleToggleBookmark } = useBookmarksContext()
+	const { bookmarkedIds, handleToggleBookmark } =
+		useBookmarksContext();
 
 	return (
 		<button
-      onClick={(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        handleToggleBookmark(id)
-      }
-      }
+			onClick={(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				handleToggleBookmark(id);
+			}}
 			className="bookmark-btn"
 		>
-			<BookmarkFilledIcon className={bookmarkedIds.includes(id) ? 'filled' : ''} />
+			<BookmarkFilledIcon
+				className={bookmarkedIds.includes(id) ? "filled" : ""}
+			/>
 		</button>
 	);
 }

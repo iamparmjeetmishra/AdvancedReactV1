@@ -8,10 +8,10 @@ import SearchForm from "./SearchForm";
 import Sidebar, { SidebarTop } from "./Sidebar";
 import JobItemContent from "./JobItemContent";
 import Pagination from "./PaginationControls";
-import JobList from "./JobList";
 import Sorting from "./SortingControls";
 import ResultsCount from "./ResultsCount";
 import { Toaster } from "react-hot-toast";
+import JobListSearch from "./JobListSearch";
 
 function App() {
 	return (
@@ -31,7 +31,7 @@ function App() {
 						<ResultsCount />
 						<Sorting />
 					</SidebarTop>
-					<JobList />
+					<JobListSearch />
 					<Pagination	/>
 				</Sidebar>
 				<JobItemContent />

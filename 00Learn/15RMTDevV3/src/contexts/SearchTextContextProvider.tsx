@@ -2,7 +2,7 @@ import { createContext, useState } from "react";
 import { useDebounce } from "../lib/hooks";
 
 type TSearchTextContext = {
-   searchText: string | null;
+   searchText: string;
    debouncedSearchText: string;
    handleChangeSearchText: (newSearchText: string) => void
 };
